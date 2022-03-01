@@ -1,0 +1,621 @@
+{% extends "base_generic.html" %}
+{% load i18n %}
+{% load static %}
+{% block content %}
+<div class="container" style="margin-bottom: 150px; margin-top: 20px;">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="container"
+                style="width: 17rem; margin-top: 10px; box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;">
+                <div class="card-body">
+                    <form enctype="multipart/form-data" id="filter"
+                        action="{% url 'brand-get' brand.pk %}">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h3 class="card-title" style="color: black;">FILTERS </h3>
+                            </div>
+                            <div class="col-md-6" style="text-align: right;">
+                                <a href="{% url 'brand-get' brand.pk %}"><i class="fas fa-sync-alt"></i> Reset</a>
+                            </div>
+                        </div>
+                        <hr style="margin-top:15px;">
+                        {% if gender_check.count > 1 %}
+                        <div class="GenderContainer">
+                            <h3 class="card-title" style="color:black;">GENDER</h3>
+                            <div class="form-check genderArea" style="padding-left: 0px;">
+                                {% for gender in genders %}
+                                <div class="row genderFilter">
+                                    <div class="col-md-1">
+                                        <input class="option" type="radio" value="{{ gender.0 }}" id="{{ brand.pk }}" name="genderOption">
+                                    </div>
+                                    <div class="col-md-5" style="padding-left: 0px;">
+                                    <label class="form-check-label" for="{{ brand.pk }}" style="margin-left:10px; color:slategray">
+                                        {{ gender.0 }} 
+                                    </label>
+                                    </div>
+                                    <div class="col-md-4" style="text-align: right; color:slategray; padding-right: 25px;">
+                                        <span>{{ gender.1 }}</span>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            <hr>
+                        </div>
+                        {% endif %}
+                        {% if age_check.count > 1 %}
+                        <div class="AgeContainer">
+                            <h3 class="card-title" style="color: black">AGE</h3>
+                            <div class="form-check ageArea" style="padding-left: 0px;">
+                                {% for age in ages %}
+                                <div class="row ageFilter">
+                                    <div class="col-md-1">
+                                        <input class="option" type="radio" value="{{ age.0 }}" id="{{ brand.pk }}" name="ageOption">
+                                    </div>
+                                    <div class="col-md-5" style="padding-left: 0px;">
+                                    <label class="form-check-label" for="{{ brand.pk }}" style="margin-left:10px; color:slategray">
+                                        {{ age.0 }} 
+                                    </label>
+                                    </div>
+                                    <div class="col-md-4" style="text-align: right; color:slategray; padding-right: 25px;">
+                                        <span>{{ age.1 }}</span>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            <hr>
+                        </div>
+                        {% endif %}
+                        {% if form_check.count > 1 %}
+                        <div class="FormContainer">
+                            <h3 class="card-title" style="color: black">PRODUCT FORMS</h3>
+                            <form class="form-inline mt-2 mt-md-0">
+                                <div class="input-group rounded">
+                                    <input type="search" class="form-control rounded" placeholder="Search"
+                                        aria-label="Search" aria-describedby="search-addon" />
+                                </div>
+                            </form>
+                            <div class="row">
+                                <div class="scrollbar"
+                                    style="float: left; height: auto; width: 210px; background: #fff; overflow-y: scroll; overflow-x: hidden; margin-bottom: 5px; margin-top: 15px; ">
+                                    <div class="force-overflow formArea" style="min-height: auto;">
+                                        {% for form in forms %}
+                                        <div class="form-check formFilter">
+                                            <div class="row">
+                                                <div class="col-md-1">
+                                                    <input class="option" type="radio" value="{{ form.0 }}" id="{{ brand.pk }}" name="formOption">
+                                                </div>
+                                                <div class="col-md-5" style="padding-left: 0px;">
+                                                <label class="form-check-label" for="{{ brand.pk }}" style="margin-left:10px; color:slategray">
+                                                    {{ form.0 }} 
+                                                </label>
+                                                </div>
+                                                <div class="col-md-4" style="text-align: right; color:slategray">
+                                                    <span>{{ form.1 }}</span>
+                                                </div>
+                                                
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                            <hr>
+                        </div>
+                        {% endif %}
+                    </form>
+                </div>
+            </div>
+            <script>
+                $(document).on('change', 'input', function() {
+                    var formOption = $("input[type=radio][name=formOption]:checked").val();
+                    var ageOption = $("input[type=radio][name=ageOption]:checked").val();
+                    var genderOption = $("input[type=radio][name=genderOption]:checked").val();
+                    var $id = $(this).attr('id');
+                    $.ajax({
+                        type: "POST",
+                        // define url name
+                        url: "/medcare/brand/"+$id+"/", 
+                        data : {    
+                        formOption : formOption,
+                        ageOption : ageOption,
+                        genderOption : genderOption,
+                        csrfmiddlewaretoken: '{{ csrf_token }}',
+                        pk : $id,
+                        action: 'Big'
+                    },
+                    // handle a successful response
+                    success: function (data) {
+                        document.getElementById("cssLoader17").style.display = "flex" 
+                        setTimeout(function () {
+                            document.getElementById("cssLoader17").style.display = "none";
+                            $('#pro').html('');
+                            $('#pro').append(data.list[0]);
+                            $('#Pagi').remove();
+                            // Change filter statement
+                            // Choose age radio
+                            if (data.list[1].type == 5){
+                                $('.formFilter').remove();
+                                $.each(data.list[1].forms, function(i, val) {
+                                    $('.formArea').append(
+                                        '<div class="form-check formFilter">'+
+                                            '<div class="row">'+
+                                                '<div class="col-md-1">'+
+                                                    '<input class="option" type="radio" value="'+ val[0] +'" id="'+ $id +'" name="formOption">'+
+                                                '</div>'+
+                                                '<div class="col-md-5" style="padding-left: 0px;">'+
+                                                '<label class="form-check-label" for="'+ $id +'" style="margin-left:10px; color:slategray">'
+                                                    + val[0] +
+                                                '</label>'+
+                                                '</div>'+
+                                                '<div class="col-md-4" style="text-align: right; color:slategray">'+
+                                                    '<span>'+ val[1] +'</span>'+
+                                                '</div>'+
+                                            '</div>'+
+                                        '</div>'
+                                    )
+                                });
+                                $('.genderFilter').remove();
+                                $.each(data.list[1].genders, function(i, val) {
+                                    $('.genderArea').append(
+                                        '<div class="row genderFilter">'+
+                                            '<div class="col-md-1">'+
+                                                '<input class="option" type="radio" value="'+ val[0] +'" id="'+ $id +'" name="genderOption">'+
+                                            '</div>'+
+                                            '<div class="col-md-5" style="padding-left: 0px;">'+
+                                            '<label class="form-check-label" for="'+ $id +'" style="margin-left:10px; color:slategray">'+
+                                                val[0] +
+                                            '</label>'+
+                                            '</div>'+
+                                            '<div class="col-md-4" style="text-align: right; color:slategray; padding-right: 25px;">'+
+                                                '<span>'+ val[1] +'</span>'+
+                                            '</div>'+
+                                        '</div>'
+                                    )
+                                });
+                            }
+                            // Choose form radio
+                            else if (data.list[1].type == 4){
+                                $('.genderFilter').remove();
+                                $.each(data.list[1].genders, function(i, val) {
+                                    $('.genderArea').append(
+                                        '<div class="row genderFilter">'+
+                                            '<div class="col-md-1">'+
+                                                '<input class="option" type="radio" value="'+ val[0] +'" id="'+ $id +'" name="genderOption">'+
+                                            '</div>'+
+                                            '<div class="col-md-5" style="padding-left: 0px;">'+
+                                            '<label class="form-check-label" for="'+ $id +'" style="margin-left:10px; color:slategray">'+
+                                                val[0] +
+                                            '</label>'+
+                                            '</div>'+
+                                            '<div class="col-md-4" style="text-align: right; color:slategray; padding-right: 25px;">'+
+                                                '<span>'+ val[1] +'</span>'+
+                                            '</div>'+
+                                        '</div>'
+                                    )
+                                });
+                                $('.ageFilter').remove();
+                                $.each(data.list[1].ages, function(i, val) {
+                                $('.ageArea').append(
+                                    '<div class="row ageFilter">'+
+                                        '<div class="col-md-1">'+
+                                            '<input class="option" type="radio" value="'+ val[0] +'" id="'+ $id +'" name="ageOption">'+
+                                        '</div>'+
+                                        '<div class="col-md-5" style="padding-left: 0px;">'+
+                                        '<label class="form-check-label" for="'+ $id +'" style="margin-left:10px; color:slategray">'+
+                                            val[0] +
+                                        '</label>'+
+                                        '</div>' +
+                                        '<div class="col-md-4" style="text-align: right; color:slategray; padding-right: 25px;">'+
+                                            '<span>'+ val[1] +'</span>' +
+                                        '</div>'+
+                                    '</div>'
+                                )})
+                            }
+                            // Choose form radio and gender radio
+                            else if (data.list[1].type = 3){
+                                $('.ageFilter').remove();
+                                $.each(data.list[1].ages, function(i, val) {
+                                $('.ageArea').append(
+                                    '<div class="row ageFilter">'+
+                                        '<div class="col-md-1">'+
+                                            '<input class="option" type="radio" value="'+ val[0] +'" id="'+ $id +'" name="ageOption">'+
+                                        '</div>'+
+                                        '<div class="col-md-5" style="padding-left: 0px;">'+
+                                        '<label class="form-check-label" for="'+ $id +'" style="margin-left:10px; color:slategray">'+
+                                            val[0] +
+                                        '</label>'+
+                                        '</div>' +
+                                        '<div class="col-md-4" style="text-align: right; color:slategray; padding-right: 25px;">'+
+                                            '<span>'+ val[1] +'</span>' +
+                                        '</div>'+
+                                    '</div>'
+                                )})
+                            }
+                            // Choose gender radio and age radio
+                            else if (data.list[1].type == 1){
+                                $('.formFilter').remove();
+                                $.each(data.list[1].forms, function(i, val) {
+                                    $('.formArea').append(
+                                        '<div class="form-check formFilter">'+
+                                            '<div class="row">'+
+                                                '<div class="col-md-1">'+
+                                                    '<input class="option" type="radio" value="'+ val[0] +'" id="'+ $id +'" name="formOption">'+
+                                                '</div>'+
+                                                '<div class="col-md-5" style="padding-left: 0px;">'+
+                                                '<label class="form-check-label" for="'+ $id +'" style="margin-left:10px; color:slategray">'
+                                                    + val[0] +
+                                                '</label>'+
+                                                '</div>'+
+                                                '<div class="col-md-4" style="text-align: right; color:slategray">'+
+                                                    '<span>'+ val[1] +'</span>'+
+                                                '</div>'+
+                                            '</div>'+
+                                        '</div>'
+                                    )
+                                });
+                            }
+                            // Choose gender radio
+                            else if (data.list[1].type == 2) {
+                                $('.formFilter').remove();
+                                $.each(data.list[1].forms, function(i, val) {
+                                    $('.formArea').append(
+                                        '<div class="form-check formFilter">'+
+                                            '<div class="row">'+
+                                                '<div class="col-md-1">'+
+                                                    '<input class="option" type="radio" value="'+ val[0] +'" id="'+ $id +'" name="formOption">'+
+                                                '</div>'+
+                                                '<div class="col-md-5" style="padding-left: 0px;">'+
+                                                '<label class="form-check-label" for="'+ $id +'" style="margin-left:10px; color:slategray">'
+                                                    + val[0] +
+                                                '</label>'+
+                                                '</div>'+
+                                                '<div class="col-md-4" style="text-align: right; color:slategray">'+
+                                                    '<span>'+ val[1] +'</span>'+
+                                                '</div>'+
+                                            '</div>'+
+                                        '</div>'
+                                    )
+                                });
+                                $('.ageFilter').remove();
+                                $.each(data.list[1].ages, function(i, val) {
+                                $('.ageArea').append(
+                                    '<div class="row ageFilter">'+
+                                        '<div class="col-md-1">'+
+                                            '<input class="option" type="radio" value="'+ val[0] +'" id="'+ $id +'" name="ageOption">'+
+                                        '</div>'+
+                                        '<div class="col-md-5" style="padding-left: 0px;">'+
+                                        '<label class="form-check-label" for="'+ $id +'" style="margin-left:10px; color:slategray">'+
+                                            val[0] +
+                                        '</label>'+
+                                        '</div>' +
+                                        '<div class="col-md-4" style="text-align: right; color:slategray; padding-right: 25px;">'+
+                                            '<span>'+ val[1] +'</span>' +
+                                        '</div>'+
+                                    '</div>'
+                                )})
+                            }
+                            // Choose form radio and age radio
+                            else if (data.list[1].type = 6) {
+                                $('.genderFilter').remove();
+                                $.each(data.list[1].genders, function(i, val) {
+                                    $('.genderArea').append(
+                                        '<div class="row genderFilter">'+
+                                            '<div class="col-md-1">'+
+                                                '<input class="option" type="radio" value="'+ val[0] +'" id="'+ $id +'" name="genderOption">'+
+                                            '</div>'+
+                                            '<div class="col-md-5" style="padding-left: 0px;">'+
+                                            '<label class="form-check-label" for="'+ $id +'" style="margin-left:10px; color:slategray">'+
+                                                val[0] +
+                                            '</label>'+
+                                            '</div>'+
+                                            '<div class="col-md-4" style="text-align: right; color:slategray; padding-right: 25px;">'+
+                                                '<span>'+ val[1] +'</span>'+
+                                            '</div>'+
+                                        '</div>'
+                                    )
+                                });
+                            }
+                            // Choose form radio, gender radio, age radio
+                            else {
+                                $('.formFilter').remove();
+                                $.each(data.list[1].forms, function(i, val) {
+                                $('.formArea').append(
+                                    '<div class="form-check formFilter">'+
+                                        '<div class="row">'+
+                                            '<div class="col-md-1">'+
+                                                '<input class="option" type="radio" value="'+ val[0] +'" id="'+ $id +'" name="formOption">'+
+                                            '</div>'+
+                                            '<div class="col-md-5" style="padding-left: 0px;">'+
+                                            '<label class="form-check-label" for="'+ $id +'" style="margin-left:10px; color:slategray">'
+                                                + val[0] +
+                                            '</label>'+
+                                            '</div>'+
+                                            '<div class="col-md-4" style="text-align: right; color:slategray">'+
+                                                '<span>'+ val[1] +'</span>'+
+                                            '</div>'+
+                                        '</div>'+
+                                    '</div>'
+                                )});
+                                $('.ageFilter').remove();
+                                $.each(data.list[1].ages, function(i, val) {
+                                $('.ageArea').append(
+                                    '<div class="row ageFilter">'+
+                                        '<div class="col-md-1">'+
+                                            '<input class="option" type="radio" value="'+ val[0] +'" id="'+ $id +'" name="ageOption">'+
+                                        '</div>'+
+                                        '<div class="col-md-5" style="padding-left: 0px;">'+
+                                        '<label class="form-check-label" for="'+ $id +'" style="margin-left:10px; color:slategray">'+
+                                            val[0] +
+                                        '</label>'+
+                                        '</div>' +
+                                        '<div class="col-md-4" style="text-align: right; color:slategray; padding-right: 25px;">'+
+                                            '<span>'+ val[1] +'</span>' +
+                                        '</div>'+
+                                    '</div>'
+                                )});
+                                $('.genderFilter').remove();
+                                $.each(data.list[1].genders, function(i, val) {
+                                    $('.genderArea').append(
+                                        '<div class="row genderFilter">'+
+                                            '<div class="col-md-1">'+
+                                                '<input class="option" type="radio" value="'+ val[0] +'" id="'+ $id +'" name="genderOption">'+
+                                            '</div>'+
+                                            '<div class="col-md-5" style="padding-left: 0px;">'+
+                                            '<label class="form-check-label" for="'+ $id +'" style="margin-left:10px; color:slategray">'+
+                                                val[0] +
+                                            '</label>'+
+                                            '</div>'+
+                                            '<div class="col-md-4" style="text-align: right; color:slategray; padding-right: 25px;">'+
+                                                '<span>'+ val[1] +'</span>'+
+                                            '</div>'+
+                                        '</div>'
+                                    )
+                                });
+                            };
+                            if (data.list[1].form_disable == true){
+                                $('.formFilter').remove();
+                                $.each(data.list[1].forms, function(i, val) {
+                                    $('.formArea').append(
+                                        '<div class="form-check formFilter">'+
+                                            '<div class="row">'+
+                                                '<div class="col-md-1">'+
+                                                    '<input class="option" type="radio" value="'+ val[0] +'" id="'+ $id +'" name="formOption" disabled>'+
+                                                '</div>'+
+                                                '<div class="col-md-5" style="padding-left: 0px;">'+
+                                                '<label class="form-check-label" for="'+ $id +'" style="margin-left:10px; color:slategray">'
+                                                    + val[0] +
+                                                '</label>'+
+                                                '</div>'+
+                                                '<div class="col-md-4" style="text-align: right; color:slategray">'+
+                                                    '<span>'+ val[1] +'</span>'+
+                                                '</div>'+
+                                            '</div>'+
+                                        '</div>'
+                                    )
+                                });
+                            }
+                            if (data.list[1].age_disable == true){
+                                $('.ageFilter').remove();
+                                $.each(data.list[1].ages, function(i, val) {
+                                $('.ageArea').append(
+                                    '<div class="row ageFilter">'+
+                                        '<div class="col-md-1">'+
+                                            '<input class="option" type="radio" value="'+ val[0] +'" id="'+ $id +'" name="ageOption" disabled>'+
+                                        '</div>'+
+                                        '<div class="col-md-5" style="padding-left: 0px;">'+
+                                        '<label class="form-check-label" for="'+ $id +'" style="margin-left:10px; color:slategray">'+
+                                            val[0] +
+                                        '</label>'+
+                                        '</div>' +
+                                        '<div class="col-md-4" style="text-align: right; color:slategray; padding-right: 25px;">'+
+                                            '<span>'+ val[1] +'</span>' +
+                                        '</div>'+
+                                    '</div>'
+                                )});
+                            }
+                            if (data.list[1].gender_disable == true){
+                                $('.genderFilter').remove();
+                                $.each(data.list[1].genders, function(i, val) {
+                                    $('.genderArea').append(
+                                        '<div class="row genderFilter">'+
+                                            '<div class="col-md-1">'+
+                                                '<input class="option" type="radio" value="'+ val[0] +'" id="'+ $id +'" name="genderOption" disabled>'+
+                                            '</div>'+
+                                            '<div class="col-md-5" style="padding-left: 0px;">'+
+                                            '<label class="form-check-label" for="'+ $id +'" style="margin-left:10px; color:slategray">'+
+                                                val[0] +
+                                            '</label>'+
+                                            '</div>'+
+                                            '<div class="col-md-4" style="text-align: right; color:slategray; padding-right: 25px;">'+
+                                                '<span>'+ val[1] +'</span>'+
+                                            '</div>'+
+                                        '</div>'
+                                    )
+                                });
+                            }
+                            if (data.list[1].form_delete == true){
+                                $('.FormContainer').html('')
+                            }
+                            if (data.list[1].age_delete == true){
+                                $('.AgeContainer').remove()
+                            }
+                            if (data.list[1].gender_delete == true){
+                                $('.GenderContainer').remove()
+                            }
+                            $('#filter-box').html(
+                                '<option value="relevance" selected>Relevance</option>'+
+                                '<option value="rating">Average Customer Rating</option>'+
+                                '<option value="increase">Price: Low to High</option>'+
+                                '<option value="descrease">Price: High to Low</option>'+
+                                '<option value="discount">Discount</option>'
+                            )
+                        }, 1000);
+                    }.bind(this),
+                    error: function(xhr, status, error) {
+                        var err = JSON.parse(xhr.responseText);
+                        alert(err.Message);
+                    }
+                });
+            });
+            </script>
+        </div>
+        <div class="col-md-9">
+            <div class="container" style="margin-top: 10px; box-shadow: rgba(0, 0, 0, 0.09) 0px 3px 12px;">
+                <div style="margin-top: 20px;">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+                            <li class="breadcrumb-item"><a href="{% url 'brand-list' %}">Brands</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">{{ brand.name }}</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <h2 style="margin-top: 20px;">{{ brand.name }}{% if brand.website %}<a href="{{ brand.website }}" target="_blank"><i class="far fa-question-circle" style="margin-left: 10px; margin-bottom: 1px; font-size: 20px; color:gray;"></a></i>{% endif %}</h2>
+                    </div>
+                    <div class="col-md-6" style="text-align: right;">
+                        <div class="row" style="margin-top: 25px;">
+                            <div class="col-md-4" style="padding-right: 0px;">
+                                <label style="margin-top: 8px;">Sort by : </label>
+                            </div>
+                            <div class="col-md-6">
+                                <select class="form-control" id="filter-box" style="width:auto;" name="{{ brand.pk }}">
+                                    <option value="relevance" selected>Relevance</option>
+                                    <option value="rating">Average Customer Rating</option>
+                                    <option value="increase">Price: Low to High</option>
+                                    <option value="descrease">Price: High to Low</option>
+                                    <option value="discount">Discount</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <script>
+                        $('#filter-box').change(function () {
+                            var $id = $('#filter-box').attr('name');
+                            var val = $(this).val();
+                            var formOption = $("input[type=radio][name=formOption]:checked").val();
+                            var ageOption = $("input[type=radio][name=ageOption]:checked").val();
+                            var genderOption = $("input[type=radio][name=genderOption]:checked").val();
+                            $.ajax({
+                                type: 'POST',
+                                url: "/medcare/brand/"+$id+"/",
+                                data: {
+                                    idd: $id,
+                                    type: val,
+                                    formOption : formOption,
+                                    ageOption : ageOption,
+                                    genderOption : genderOption,
+                                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                                    action: 'Small'
+                                },
+                                success: function (data) {
+                                    document.getElementById("cssLoader17").style.display = "flex" 
+                                    setTimeout(function () {
+                                        document.getElementById("cssLoader17").style.display = "none";
+                                        $('#Pagi').remove();
+                                        $('#pro').html('');
+                                        $('#pro').append(data.list)
+                                    }, 1000);
+                                }.bind(this),
+                                error: function(xhr, status, error) {
+                                    var err = JSON.parse(xhr.responseText);
+                                    alert(err.Message);
+                                }
+                            });
+                    });
+                    </script>
+                </div>
+                <div style="text-align: center;">
+                    <img src="{{ brand.advert_image.url }}" width="1200" height="250" class="img-fluid"
+                        style="margin-top: 2%; margin-bottom: 5%;" alt="Advert">
+                </div>
+                <h3>All products</h3>
+                <div id="pro" class="row products-list" style="margin-top:20px;">
+                    {% for product in products %}
+                    <div class="col-md-4" style="margin-bottom: 20px; border-radius: 8%;">
+                        <div class="card" style="box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 50px; position:relative; z-index: 1;">
+                            {% if product.valid_day %}
+                                <span class="ribbo">
+                                    <span><b style="color:white;"><div style="color: yellow;">{{ product.discount }}%</div> OFF</b></span>
+                                </span>
+                            {% endif %}
+                            <div class="my-4 text-center border-0">
+                                <div>
+                                    <a href="{% url 'product-detail' product.pk %}" target="_blank">
+                                        <img src="{{ product.image.url }}" style="align-content: center; border-radius: 8%;" width="180" height="180" alt="{{ product.product_name }}" target="_blank">
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="card-body text-center">
+                                <span data-toggle="tooltip" data-placement="top" title="{{ product.product_name }}"></span>
+                                    <p class="card-text mb-1 text-truncate">{{ product.product_name }}</p>
+                                </span>
+                                {% if product.valid_day %}
+                                <div class="row" style="margin-bottom: 16px;">
+                                    <div class="col-md-6" style="text-align: right; padding-right: 5px;">
+                                        <p class="card-text" style="color: dimgrey;"><del>{{ product.price|floatformat:2 }} $</del></p>
+                                    </div>
+                                    <div class="col-md-6" style="text-align: left; padding-left: 5px;">
+                                        <p class="card-text font-weight-bold">{{ product.get_discount_price|floatformat:2 }} $</p>
+                                    </div>
+                                </div>
+                                {% else %}
+                                <p class="card-text font-weight-bold">{{ product.price|floatformat:2 }} $</p>
+                                {% endif %}
+                                <div class="favorite_area">
+                                    <div class="fav">
+                                        <div class="row">
+                                            <div class="col-md-8" style="padding-left: 25px;">
+                                                <a href="{% url 'product-detail' product.pk %}" class="btn btn-primary" target="_blank">View details</a>
+                                            </div>
+                                            <a href="{% url 'product-detail' product.pk %}">
+                                                <button class="btn" style="padding-left: 0px;"><i class="fas fa-shopping-cart ml-2" target="_blank"></i></button>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% if products.has_other_pages %}
+            <nav aria-label="Product navigation" style="margin-left: 40%; margin-top: 20px;" id="Pagi">
+                <ul class="pagination">
+                    {% if products.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ products.previous_page_number }}" tabindex="-1">Previous</a>
+                    </li>
+                    {% endif %}
+                    {% for i in products.paginator.page_range %}
+                    {% if products.number == i %}
+                    <li class="page-item active">
+                        <a class="page-link">{{ i }} <span class="sr-only">(current)</span></a>
+                    </li>
+                    {% else %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+                    </li>
+                    {% endif %}
+                    {% endfor %}
+                    {% if products.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ products.next_page_number }}">Next</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div id="cssLoader17" class="main-wrap main-wrap--white" style="z-index: 5; display: none;">
+    <div class="loader-background">
+        <div class="cssLoader17"></div>
+    </div>
+</div>
+{% endblock %}

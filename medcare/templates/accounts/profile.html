@@ -1,0 +1,376 @@
+<div class="cover">
+{% extends "base_generic.html" %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+
+{% block content %}
+<div class="container">
+        <div class="main-content">
+            <!-- Header -->
+            <div style="margin-top: 15%;"></div>
+            <!-- Page content -->
+            <div class="container-fluid mt--7">
+                <div class="row">
+                    <div class="col-xl-4 order-xl-2 mb-5 mb-xl-0">
+                        <div class="card card-profile shadow">
+                            <div class="row justify-content-center">
+                                <div class="col-lg-3 order-lg-2">
+                                    <div class="card-profile-image">
+                                        <a href="#">
+                                            {% if user.avatar_url %}
+                                                <img src="{{ user.avatar_url }}" class="rounded-circle">
+                                            {% else %}
+                                                <img src="https://thumbs.dreamstime.com/b/female-avatar-icon-flat-style-female-user-icon-cartoon-woman-vector-stock-91462850.jpg" class="rounded-circle">
+                                            {% endif %}
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-header text-center border-0 pt-8 pt-md-4 pb-0 pb-md-4">
+                                <div class="d-flex justify-content-between">
+                                    <!-- <a href="#" class="btn btn-sm btn-info mr-4">Cover</a>
+                                    <a href="#" class="btn btn-sm btn-default float-right">Avatar</a> -->
+                                </div>
+                            </div>
+                            <div class="card-body pt-0 pt-md-4">
+                                <div class="row">
+                                    <div class="col">
+                                        <div class="card-profile-stats d-flex justify-content-center mt-md-5">
+                                            <div>
+                                                <span class="heading">{{ reviews|length }}</span>
+                                                <span class="description">{% translate "Reviews" %}</span>
+                                            </div>
+                                            <div>
+                                                <span class="heading">{{ comments|length }}</span>
+                                                <span class="description">{% translate "Comments" %}</span>
+                                            </div>
+                                            <div>
+                                                <span class="heading">{{ orders|length }}</span>
+                                                <span class="description">{% translate "Orders" %}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="text-center">
+                                    <h3>{{ user.first_name }} <span class="font-weight-light">{{ user.last_name }}</span></h3>
+                                    <div class="h5 font-weight-300">
+                                        <i class="ni location_pin mr-2"></i>
+                                        {% if user.address %}
+                                            {{ user.address }}
+                                        {% endif %}
+                                    </div>
+                                    <div class="h5 mt-4">
+                                        <i class="ni business_briefcase-24 mr-2"></i>
+                                        {% if user.is_admin %}
+                                            {% translate "ADMIN" %}
+                                            <a href="{% url 'dashboard' %}" type="button" class="btn btn-primary btn-lg btn-block" style="margin-top: 20px;">ADMIN DASHBOARD</a>
+                                        {% else %}
+                                            {% if user.is_staff %}
+                                                {% translate "STAFF" %}
+                                            {% else %}
+                                                {% translate "NORMAL USER" %}
+                                            {% endif %}
+                                        {% endif %}
+                                    </div>
+                                    <hr class="my-4">
+                                    <div><i class="ni education_hat mr-2"></i>{% translate "Last login:" %} {{ user.last_login|date:'Y/m/d H:i' }}</div>
+                                    <p>{% translate "Date joined:" %} {{ user.date_joined|date:'Y/m/d H:i' }}</p>
+                                    <a href=".multi-collapse" role="button" data-toggle="collapse" aria-expanded="false" aria-controls="password-reset user-info">{% translate "Show more" %}</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-8 order-xl-1">
+                        <div class="card bg-secondary shadow">
+                            {% if messages %}
+                                {% for message in messages %}
+                                {% if 'order' not in message %}
+                                <div {% if message.tags %} class="alert alert-{{ message.tags }}"{% endif %} role="alert" style="margin-bottom: 0px;">
+                                    {% if message.tags == 'success'%}
+                                    <i class="far fa-check-circle" style="margin-right: 5px;"></i>
+                                    {% elif message.tags == 'warning' %}
+                                    <i class="fas fa-exclamation-circle" style="margin-right: 5px;"></i>
+                                    {% else %}
+                                    <i class="fas fa-times" style="margin-right: 5px;"></i>
+                                    {% endif %}
+                                    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                                    {{ message|striptags }}
+                                </div>
+                                {% endif %}
+                                {% endfor %}
+                            {% endif %}
+                            <div class="card-header bg-white border-0">
+                                <div class="row align-items-center">
+                                    <div class="col-8">
+                                        <h3 class="mb-0">{% translate "My account" %}</h3>
+                                    </div>
+                                    <div class="col-4 text-right">
+                                        <a href="#password-reset" role="button" data-toggle="collapse" aria-expanded="false" aria-controls="password-reset" class="btn btn-sm btn-primary">{% translate "Change password" %}</a>
+                                        <a href="#user-info" role="button" data-toggle="collapse" aria-expanded="false" aria-controls="user-info" class="btn btn-sm btn-primary">{% translate "Settings" %}</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="account-information" class="card-body">
+                                <form id="password-reset" method="POST" action="{% url 'profile' %}" class="collapse multi-collapse">
+                                    {% csrf_token %}
+                                    <h6 class="heading-small text-muted mb-4">{% translate "Password Reset" %}</h6>
+                                    <div class="pl-lg-4">
+                                        <div class="row">
+                                            <div class="col-lg-4">
+                                                <div class="form-group focused">
+                                                    <label class="form-control-label" for="old_password">{% translate "Current password" %}</label>
+                                                    <input type="password" id="old_password" name="old_password" class="form-control form-control-alternative" placeholder="*****">
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-4">
+                                                <div class="form-group focused">
+                                                    <label class="form-control-label" for="new_password1">{% translate "New password" %}</label>
+                                                    <input type="password" id="new_password1" name="new_password1" class="form-control form-control-alternative" placeholder="*****">
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-4">
+                                                <div class="form-group">
+                                                    <label class="form-control-label" for="new_password2">{% translate "New password (confirm)" %}</label>
+                                                    <input type="password" id="new_password2" name="new_password2" class="form-control form-control-alternative" placeholder="*****">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <input type="hidden" class="form-control" name="password-reset" value="True">
+                                        <button type="submit" id="save-password-change" class="btn btn-primary col-md-12">{% translate "Save" %}</button>
+                                    </div>
+                                    <br>
+                                </form>
+                                <form id="user-info" method="POST" action="{% url 'profile' %}">
+                                    {% csrf_token %}
+                                    <h6 class="heading-small text-muted mb-4">{% translate "User information" %}</h6>
+                                    <div class="pl-lg-4">
+                                        <div class="row">
+                                            <div class="col-lg-6">
+                                                <div class="form-group focused">
+                                                    <label class="form-control-label" for="username">{% translate "Username" %}</label>
+                                                    <input disabled type="text" id="username" name="username" class="form-control form-control-alternative" placeholder="{% translate 'Username' %}" value="{% if user.username %}{{ user.username }}{% endif %}">
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <div class="form-group">
+                                                    <label class="form-control-label" for="email">{% translate "Email address" %}</label>
+                                                    <input disabled type="email" id="email" name="email" class="form-control form-control-alternative" placeholder="{% translate 'test@example.com' %}" value="{% if user.email %}{{ user.email }}{% endif %}">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-lg-6">
+                                                <div class="form-group focused">
+                                                    <label class="form-control-label" for="first_name">{% translate "First name" %}</label>
+                                                    <input type="text" id="first_name" name="first_name" class="form-control form-control-alternative" placeholder="{% translate 'First name' %}" value="{% if user.first_name %}{{ user.first_name }}{% endif %}">
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <div class="form-group focused">
+                                                    <label class="form-control-label" for="last_name">{% translate "Last name" %}</label>
+                                                    <input type="text" id="last_name" name="last_name" class="form-control form-control-alternative" placeholder="{% translate 'Last name' %}" value="{% if user.last_name %}{{ user.last_name }}{% endif %}">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- <hr class="my-4"> -->
+                                    <!-- Address -->
+                                    <h6 class="heading-small text-muted mb-4">{% translate "Contact information" %}</h6>
+                                    <div class="pl-lg-4">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="form-group focused">
+                                                    <label class="form-control-label" for="address">{% translate "Address" %}</label>
+                                                    <input id="address" name="address" class="form-control form-control-alternative" placeholder="{% translate 'Address' %}" value="{% if user.address %}{{ user.address }}{% endif %}" type="text">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-lg-3">
+                                                <div class="form-group focused">
+                                                    <label class="form-control-label" for="phone_number">{% translate "Phone Number" %}</label>
+                                                    <input type="tel" id="phone_number" name="phone_number" class="form-control form-control-alternative" placeholder="{% translate 'Phone number' %}" value="{% if user.phone_number %}{{ user.phone_number }}{% endif %}" type="text">
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-3">
+                                                <div class="form-group focused">
+                                                    <label class="form-control-label" for="city">{% translate "City" %}</label>
+                                                    <input type="text" id="city" name="city" class="form-control form-control-alternative" placeholder="{% translate 'City' %}" value="{% if user.city %}{{ user.city }}{% endif %}">
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-3">
+                                                <div class="form-group focused">
+                                                    <label class="form-control-label" for="country">{% translate "Country" %}</label>
+                                                    <input type="text" id="country" name="country" class="form-control form-control-alternative" placeholder="{% translate 'Country' %}" value="{% if user.country %}{{ user.country }}{% endif %}">
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-3">
+                                                <div class="form-group">
+                                                    <label class="form-control-label" for="zip_code">{% translate "Postal code" %}</label>
+                                                    <input type="number" id="zip_code" name="zip_code" class="form-control form-control-alternative" placeholder="{% translate 'Postal code' %}" value="{% if user.zip_code %}{{ user.zip_code }}{% endif %}">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="pl-lg-4">
+                                        <input type="hidden" class="form-control" name="save-new-info" value="True">
+                                        <button type="submit" id="save-new-info" class="btn btn-primary col-md-12">{% translate "Save" %}</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Orders -->
+                <div class="row" id="orders-history" style="z-index: 2;">
+                    <div class="bg-secondary shadow" style="width: 68.5rem;">
+                        <div class="card-header bg-white border-0">
+                            <div class="row align-items-center">
+                                <div class="col-8">
+                                    <h3 class="mb-0">{% translate "Order History" %}</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="">
+                            <div class="shpcart" id="orders-table">
+                                    <table class="table table-bordered table-responsive">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">{% translate "Order No." %}</th>
+                                                <th scope="col" style="width: 140px;">{% translate "Contact No." %}</th>
+                                                <th scope="col" style="width: 275px;">{% translate "Delivered To" %}</th>
+                                                <th scope="col" style="width: 120px;">{% translate "Total" %}</th>
+                                                <th scope="col">{% translate "Date created" %}</th>
+                                                <th scope="col" style="width: 119px;">{% translate "Status" %}</th>
+                                                <th scope="col"></th>
+                                                <th scope="col"></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% if orders.exists %}
+                                                {% for order in orders %}
+                                                    <tr id="{{order.id}}">
+                                                        <td><p>#{{ forloop.counter }}</p></td>
+                                                        <td><p>{{ order.phone_number }}</p></td>
+                                                        <td><p>{{ order.shipping_address }}</p></td>
+                                                        <td><p>{{ order.total_price }} $</p></td>
+                                                        <td><p>{{ order.created_at }}</p></td>
+                                                        <td>
+                                                            {% if order.status == 'A' %}
+                                                            <span class="badge badge-success">Approved</span>
+                                                            {% elif order.status == 'W' %}
+                                                            <span class="badge badge-warning">Waiting</span>
+                                                            {% elif order.status == 'R' %}
+                                                            <span class="badge badge-danger">Rejected</span>
+                                                            {% endif %}
+                                                        </td>
+                                                        <td><a href="{% url 'order_detail' order.id %}"><i class="far fa-eye" href="#"></i></a></td>
+                                                        {% if order.status == 'W' %}
+                                                        <td><a href="#" data-toggle="modal" data-target="#warmingModal"><i class="fa fa-trash"></i></a></td>
+                                                        <!-- Modal -->
+                                                        <div class="modal fade" id="warmingModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                            <div class="modal-dialog" role="document">
+                                                                <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                    <h3 class="modal-title" id="exampleModalLabel">{% trans 'Warming' %}</h3>
+                                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                    <span aria-hidden="true">&times;</span>
+                                                                    </button>
+                                                                </div>
+                                                                <div class="modal-body">
+                                                                    {% trans 'Are you sure you want to cancel this order?' %}
+                                                                </div>
+                                                                <div class="modal-footer">
+                                                                    <button type="button" class="btn btn-secondary close_modal" data-dismiss="modal">{% trans 'No, nevermind' %}</button>
+                                                                    <a class="removeOrder" id="row_{{ order.id }}" href="{% url 'order_remove' order.id %}">
+                                                                        <button type="button" class="btn btn-primary">{% trans 'Yes, cancel this order' %}</button>
+                                                                    </a>
+                                                                </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        {% endif %}
+                                                    </tr>
+                                                {% endfor %}
+                                                <script>
+                                                    $('.removeOrder').click(function (event) {
+                                                        // create an AJAX call
+                                                        event.preventDefault();
+                                                        var $id = $(this).attr('id');
+                                                        var target = $id.substring($id.indexOf('_') + 1);
+                                                        $.ajax({
+                                                            url: $(this).attr("href"),
+                                                            // on success
+                                                            success: function (response) {
+                                                                $('.close_modal').click();
+                                                                $("tr#"+target).remove();
+                                                                toastr.options = {
+                                                                    "debug": false,
+                                                                    "newestOnTop": true,
+                                                                    "progressBar": true,
+                                                                    "positionClass": "toast-top-right",
+                                                                    "preventDuplicates": false,
+                                                                    "showDuration": "500",
+                                                                    "hideDuration": "1000",
+                                                                    "timeOut": "5000",
+                                                                    "extendedTimeOut": "1000",
+                                                                    "showEasing": "swing",
+                                                                    "hideEasing": "linear",
+                                                                    "showMethod": "fadeIn",
+                                                                    "hideMethod": "fadeOut"
+                                                                }
+                                                                if (response.status == "success") {
+                                                                    toastr["success"](response.message);
+                                                                }
+                                                                else if (response.status == "warning") {
+                                                                    toastr["warning"](response.message);
+                                                                }
+                                                                else if (response.status == "error") {
+                                                                    toastr["error"](response.message);
+                                                                }
+                                                            },
+                                                            // on error
+                                                            error: function (response) {
+                                                                // alert the error if any error occured
+                                                                alert(response.status)
+                                                            }
+                                                        });
+                                                        return false;
+                                                    })
+                                                </script> 
+                                            {% else %}
+                                                <tr>
+                                                    <td>{% trans 'You do not have any order yet!' %}</td>
+                                                </tr>
+                                            {% endif %}
+                                        </tbody>
+                                    </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="cssLoader17" class="main-wrap main-wrap--white" style="z-index: 5; display: none;">
+        <div class="loader-background">
+            <div class="cssLoader17"></div>
+        </div>
+    </div>
+    <script>
+        $(window).bind("load", function () {
+            var delay = 1000;
+            document.getElementById("cssLoader17").style.display = "flex" 
+            setTimeout(function () {
+                document.getElementById("cssLoader17").style.display = "none" 
+            }, delay);
+        });
+    </script>
+{% endblock %}
+</div>
+
+{% block jscode %}
+<script src="{% static 'js/alert.js' %}" defer></script>
+{% endblock %}

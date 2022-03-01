@@ -1,0 +1,172 @@
+{% extends 'admin/layouts/base.html' %}
+{% load i18n %}
+{% load static %}
+{% block title %} All products {% endblock title %}
+
+{% block content %}
+
+<div class="header bg-light pb-6">
+    <div class="container-fluid">
+        <div class="header-body">
+            <div class="row align-items-center py-4">
+                <div class="col-lg-6 col-7">
+                    <h6 class="h2 text-dark d-inline-block mb-0">Products Summary</h6>
+                    <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+                        <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                            <li class="breadcrumb-item"><a href="{% url 'dashboard' %}"><i class="fas fa-home"></i></a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Product</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Product content -->
+<div class="container-fluid mt--6" style="background-color:lavender;">
+    <div class="row">
+        <div class="col">
+            <div class="card">
+                <!-- Card header -->
+                <div class="card-header border-0">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h3 class="mb-0">Product Info</h3>
+                        </div>
+                        <div class="col-md-6" style="text-align: right;">
+                            <a class="nav-link" href="/admin/medcare/product/"><i class="ni ni-settings-gear-65"></i><span class="nav-link-text"> Click here to modify product items data</span></a>
+                        </div>
+                    </div>
+                </div>
+                <!-- Light table -->
+                <div class="table-responsive">
+                    <table class="table align-items-center table-flush">
+                        <thead class="thead-light">
+                            <tr>
+                                <th scope="col" class="sort" data-sort="id">No.</th>
+                                <th scope="col" class="sort" data-sort="product_name">Product name</th>
+                                <th scope="col" class="sort" data-sort="image">Image</th>
+                                <th scope="col" class="sort" data-sort="category">Category</th>
+                                <th scope="col" class="sort" data-sort="brand">Brand</th>
+                                <th scope="col" class="sort" data-sort="gender">Gender</th>
+                                <th scope="col" class="sort" data-sort="form">Form</th>
+                                <th scope="col" class="sort" data-sort="description">Description</th>
+                                <th scope="col" class="sort" data-sort="publish_date">Created at</th>
+                                <th scope="col" class="sort" data-sort="price">Price</th>
+                                <th scope="col" class="sort" data-sort="quantity">Quantity</th>
+                                <th scope="col" class="sort"></th>
+                            </tr>
+                        </thead>
+                        <tbody class="list">
+                            {% if product_list.exists %}
+                            {% for product in product_page_obj %}
+                            <tr>
+                                <th >
+                                    {{ forloop.counter }}
+                                </th>
+                                <td scope="row" class="product_name">
+                                    <b data-toggle="tooltip" data-placement="top" title="{{ product.product_name }}">{{ product.product_name|truncatechars:18 }}</b>
+                                </td>
+                                <td class="image">
+                                    <a href="{{ product.image.url }}" class="avatar" data-toggle="tooltip" data-original-title="{{ product.product_name }}">
+                                        <img alt="Image placeholder" id="myImage" src="{{ product.image.url }}">
+                                    </a>
+                                </td>
+                                <td class="category">
+                                    <span data-toggle="tooltip" data-placement="top" title="{{ product.category }}">{{ product.category|truncatechars:15 }}</span>
+                                </td>
+                                <td class="brand">
+                                    <span data-toggle="tooltip" data-placement="top" title="{{ product.brand }}">{{ product.brand }}</span>
+                                </td>
+                                <td class="gender">
+                                    <span data-toggle="tooltip" data-placement="top" title="{{ product.gender }}">{{ product.gender }}</span>
+                                </td>
+                                <td class="form">
+                                    <span data-toggle="tooltip" data-placement="top" title="{{ product.form }}">{{ product.form|truncatechars:10 }}</span>
+                                </td>
+                                <td class="description">
+                                    {{ product.description|striptags|truncatechars:10 }}
+                                </td>
+                                <td class="created_at">
+                                    <span data-toggle="tooltip" data-placement="top" title="{{ product.created_at }}">{{ product.created_at|truncatechars:10 }}</span>
+                                </td>
+                                <td class="price">
+                                    <span data-toggle="tooltip" data-placement="top" title="{{ product.price }} $">{{ product.price }} $</span>
+                                </td>
+                                <td class="quantity">
+                                    <span data-toggle="tooltip" data-placement="top" title="{{ product.quantity }}">{{ product.quantity }}</span>
+                                </td>
+                                <td class="text-right">
+                                    <div class="dropdown">
+                                        <a class="btn btn-sm btn-icon-only text-light" href="#" role="button"
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <i class="fas fa-ellipsis-v"></i>
+                                        </a>
+                                        <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
+                                            <a class="dropdown-item" href="/admin/medcare/product/{{product.id}}/change/">See details/Edit</a>
+                                            <a class="dropdown-item" href="{{ product.get_absolute_url }}">View on site</a>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            {% else %}
+                            <tr>
+                                <td>{% trans 'Do not have any products yet!' %}</td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Card footer -->
+                <div class="card-footer py-4">
+                    <nav aria-label="...">
+                        <ul class="pagination justify-content-end mb-0">
+                            {% if product_page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ product_page_obj.previous_page_number }}"
+                                    tabindex="-1">
+                                    <i class="fas fa-angle-left"></i>
+                                    <span class="sr-only">Previous</span>
+                                </a>
+                            </li>
+                            {% endif %}
+
+                            {% for page_num in product_page_obj.paginator.page_range %}
+                            {% if product_page_obj.number == page_num %}
+                            <li class="page-item active">
+                                <a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a>
+                            </li>
+                            {% else %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a>
+                            </li>
+                            {% endif %}
+                            {% endfor %}
+
+                            {% if product_page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ product_page_obj.next_page_number }}">
+                                    <i class="fas fa-angle-right"></i>
+                                    <span class="sr-only">Next</span>
+                                </a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- <script src="https://code.jquery.com/jquery-3.4.0.min.js" integrity="sha384-JUMjoW8OzDJw4oFpWIB2Bu/c6768ObEthBMVSiIx4ruBIEdyNSUQAjJNFqT5pnJ6" crossorigin="anonymous"></script>
+<script src="zoomsl.min.js"></script>
+<script>
+    $('#myImage').imagezoomsl();
+</script> -->
+
+{% endblock content %}
+
+<!-- Specific JS goes HERE -->
+{% block javascripts %}{% endblock javascripts %}

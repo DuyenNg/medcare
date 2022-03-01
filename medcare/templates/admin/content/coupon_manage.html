@@ -1,0 +1,148 @@
+{% extends 'admin/layouts/base.html' %}
+{% load i18n %}
+{% load static %}
+{% block title %} All coupons {% endblock title %}
+
+{% block content %}
+
+<div class="header bg-light pb-6">
+    <div class="container-fluid">
+        <div class="header-body">
+            <div class="row align-items-center py-4">
+                <div class="col-lg-6 col-7">
+                    <h6 class="h2 text-dark d-inline-block mb-0">Coupons Summary</h6>
+                    <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+                        <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                            <li class="breadcrumb-item"><a href="{% url 'dashboard' %}"><i class="fas fa-home"></i></a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Coupon</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="container-fluid mt--6" style="background-color:lavender;">
+    <div class="row">
+        <div class="col">
+            <div class="card">
+                <!-- Card header -->
+                <div class="card-header border-0">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h3 class="mb-0">Coupon Info</h3>
+                        </div>
+                        <div class="col-md-6" style="text-align: right;">
+                            <a class="nav-link" href="/admin/medcare/coupon/"><i class="ni ni-settings-gear-65"></i><span class="nav-link-text"> Click here to modify coupon data</span></a>
+                        </div>
+                    </div>
+                </div>
+                <!-- Light table -->
+                <div class="table-responsive">
+                    <table class="table align-items-center table-flush">
+                        <thead class="thead-light">
+                            <tr>
+                                <th scope="col" class="sort" data-sort="id">No.</th>
+                                <th scope="col" class="sort" data-sort="title">Title</th>
+                                <th scope="col" class="sort" data-sort="content">Content</th>
+                                <th scope="col" class="sort" data-sort="code">Code</th>
+                                <th scope="col" class="sort" data-sort="value">Value</th>
+                                <th scope="col" class="sort" data-sort="coupon_expired">Expired time</th>
+                                <th scope="col" class="sort" data-sort="minimum_order">Minimum order</th>
+                                <th scope="col" class="sort"></th>
+                            </tr>
+                        </thead>
+                        <tbody class="list">
+                            {% if coupon_list.exists %}
+                            {% for coupon in coupon_page_obj %}
+                            <tr>
+                                <th scope="row">
+                                    {{ forloop.counter }}
+                                </th>
+                                <td class="title">
+                                    <b>{{ coupon.title }}</b>
+                                </td>
+                                <td class="content">
+                                    <b>{{ coupon.content }}</b>
+                                </td>
+                                <td class="code">
+                                    <b>{{ coupon.code }}</b>
+                                </td>
+                                <td class="value">
+                                    <b>{{ coupon.value }}</b>
+                                </td>
+                                <td class="coupon_expired">
+                                    <b>{{ coupon.coupon_expired }}</b>
+                                </td>
+                                <td class="minimum_order">
+                                    <b>{{ coupon.minimum_order }}</b>
+                                </td>
+                                <td class="text-right">
+                                    <div class="dropdown">
+                                        <a class="btn btn-sm btn-icon-only text-light" href="#" role="button"
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <i class="fas fa-ellipsis-v"></i>
+                                        </a>
+                                        <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
+                                            <a class="dropdown-item" href="/admin/medcare/coupon/{{coupon.id}}/change/">See details/Edit</a>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            {% else %}
+                            <tr>
+                                <td>{% trans 'Do not have any coupons yet!' %}</td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Card footer -->
+                <div class="card-footer py-4">
+                    <nav aria-label="...">
+                        <ul class="pagination justify-content-end mb-0">
+                            {% if coupon_page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ coupon_page_obj.previous_page_number }}"
+                                    tabindex="-1">
+                                    <i class="fas fa-angle-left"></i>
+                                    <span class="sr-only">Previous</span>
+                                </a>
+                            </li>
+                            {% endif %}
+
+                            {% for page_num in coupon_page_obj.paginator.page_range %}
+                            {% if coupon_page_obj.number == page_num %}
+                            <li class="page-item active">
+                                <a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a>
+                            </li>
+                            {% else %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a>
+                            </li>
+                            {% endif %}
+                            {% endfor %}
+
+                            {% if brand_page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ coupon_page_obj.next_page_number }}">
+                                    <i class="fas fa-angle-right"></i>
+                                    <span class="sr-only">Next</span>
+                                </a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+
+<!-- Specific JS goes HERE -->
+{% block javascripts %}{% endblock javascripts %}

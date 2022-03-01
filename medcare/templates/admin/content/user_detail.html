@@ -1,0 +1,204 @@
+{% extends 'admin/layouts/base.html' %}
+{% load i18n %}
+{% load static %}
+{% block title %} User detail {% endblock title %}
+
+{% block content %}
+
+<div class="header bg-light pb-6">
+    <div class="container-fluid">
+        <div class="header-body">
+            <div class="row align-items-center py-4">
+                <div class="col-lg-6 col-7">
+                    <h6 class="h2 text-dark d-inline-block mb-0">User Info</h6>
+                    <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+                        <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                            <li class="breadcrumb-item"><a href="{% url 'dashboard' %}"><i class="fas fa-home"></i></a>
+                            </li>
+                            <li class="breadcrumb-item active" aria-current="page">User</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="container-fluid mt--6" style="background-color:lavender;">
+    <div class="row">
+        <div class="col">
+            <div class="card">
+                <!-- Card header -->
+                <div class="card-header border-0">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h3 class="mb-0">User # {{ user.id }}</h3>
+                        </div>
+                        <div class="col-md-6" style="text-align: right;">
+                            <a class="nav-link" href="/admin/medcare/user/"><i class="ni ni-settings-gear-65"></i><span
+                                    class="nav-link-text"> Click here to modify user data</span></a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="container rounded bg-white mb-5">
+                    <div class="row">
+                        <div class="col-md-3 border-right">
+                            <div class="d-flex flex-column align-items-center text-center p-3 py-5">
+                                <img class="rounded-circle mt-5" width="150px"
+                                    src="https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg">
+                                <span class="font-weight-bold">{{ user.username }}</span>
+                                <span class="text-black-50">{{ user.email }}</span>
+                                <span> </span>
+                            </div>
+                        </div>
+                        <div class="col-md-9 border-right">
+                            <div class="p-3 py-5">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h4 class="text-right">Profile Settings</h4>
+                                </div>
+                                <div class="alert-area" style="margin-bottom:20px;"></div>
+                                <h6 class="heading-small text-muted mb-4">{% translate "User information" %}</h6>
+                                <div class="row mt-2">
+                                    <div class="col-md-6">
+                                        <label class="labels">Username</label>
+                                        <input id="username" type="text" class="form-control" placeholder="username"
+                                            value="{% if user.username %}{{ user.username }}{% endif %}">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="labels">Email address</label>
+                                        <input id="email" type="text" class="form-control" placeholder="email adress"
+                                            value="{% if user.email %}{{ user.email }}{% endif %}" disabled>
+                                    </div>
+                                </div>
+                                <div class="row mt-2">
+                                    <div class="col-md-6">
+                                        <label class="labels">First name</label>
+                                        <input id="first_name" type="text" class="form-control" placeholder="first name"
+                                            value="{% if user.first_name %}{{ user.first_name }}{% endif %}">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="labels">Last name</label>
+                                        <input id="last_name" type="text" class="form-control" placeholder="last name"
+                                            value="{% if user.last_name %}{{ user.last_name }}{% endif %}">
+                                    </div>
+                                </div>
+                                <h6 class="heading-small text-muted mb-4" style="margin-top:30px">{% translate "Contact information" %}</h6>
+                                <div class="row mt-3">
+                                    <div class="col-md-12">
+                                        <label class="labels">Address</label>
+                                        <input id="address" type="text" class="form-control" placeholder="address"
+                                            value="{% if user.address %}{{ user.address }}{% endif %}">
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-md-6">
+                                        <label class="labels">Phone number</label>
+                                        <input id="phone_number" type="text" class="form-control"
+                                            placeholder="phone number"
+                                            value="{% if user.phone_number %}{{ user.phone_number }}{% endif %}">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="labels">Postal code</label>
+                                        <input id="zip_code" type="text" class="form-control" placeholder="postal code"
+                                            value="{% if user.zip_code %}{{ user.zip_code }}{% endif %}">
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-md-6">
+                                        <label class="labels">City</label>
+                                        <input id="city" type="text" class="form-control" placeholder="city"
+                                            value="{% if user.city %}{{ user.city }}{% endif %}">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="labels">Country</label>
+                                        <input id="country" type="text" class="form-control" placeholder="contry"
+                                            value="{% if user.country %}{{ user.country }}{% endif %}">
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-md-6">
+                                        <div class="form-check form-check-inline">
+                                            <input id="is_admin" class="form-check-input" type="checkbox"
+                                                id="inlineCheckbox1" {% if user.is_admin == True %}checked disabled{% endif %}>
+                                            <label class="form-check-label" for="inlineCheckbox1">Is admin</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-check form-check-inline">
+                                            <input id="is_staff" class="form-check-input" type="checkbox"
+                                                id="inlineCheckbox2" {% if user.is_staff == True %}checked disabled{% endif%}>
+                                            <label class="form-check-label" for="inlineCheckbox2">Is staff</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-5 text-center">
+                                <a class="updateUser" id="{{ user.id }}" href="">
+                                    <button class="btn btn-primary col-md-12" type="button">Update</button>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+
+<!-- Specific JS goes HERE -->
+{% block javascripts %}
+<script>
+    $(function () {
+        $(document).on('click', '.updateUser', function (e) {
+            // preventing default actions
+            event.preventDefault();
+            var $id = $(this).attr('id');
+            var username = $("#username").val();
+            var first_name = $("#first_name").val();
+            var last_name = $("#last_name").val();
+            var address = $("#address").val();
+            var phone_number = $("#phone_number").val();
+            var zip_code = $("#zip_code").val();
+            var city = $("#city").val();
+            var country = $("#country").val();
+            // ajax call
+            $.ajax({
+                type: "POST",
+                // define url name
+                url: "/medcare/admin/user/" + $id,
+                data: {
+                    review_id: $id,
+                    username: username,
+                    first_name: first_name,
+                    last_name: last_name,
+                    address: address,
+                    phone_number: phone_number,
+                    zip_code: zip_code,
+                    city: city,
+                    country: country,
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                },
+                // on success
+                success: function (response) {
+                    $('.alert-area').append(
+                        '<div class="alert alert-'+ response.status +'" role="alert" style="margin-bottom: 0px;">'+
+                            '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>'+
+                                response.message+
+                        '</div>'
+                    )
+                },
+                // on error
+                error: function (response) {
+                    // alert the error if any error occured
+                    alert(response.status)
+                }
+            });
+            return false;
+        });
+    }); 
+</script>
+{% endblock javascripts %}

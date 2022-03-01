@@ -1,0 +1,143 @@
+{% extends 'admin/layouts/base.html' %}
+{% load i18n %}
+{% load static %}
+{% block title %} All requests {% endblock title %}
+
+{% block content %}
+
+<div class="header bg-light pb-6">
+    <div class="container-fluid">
+        <div class="header-body">
+            <div class="row align-items-center py-4">
+                <div class="col-lg-6 col-7">
+                    <h6 class="h2 text-dark d-inline-block mb-0">Requests Summary</h6>
+                    <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+                        <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                            <li class="breadcrumb-item"><a href="{% url 'dashboard' %}"><i class="fas fa-home"></i></a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Request</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="container-fluid mt--6" style="background-color:lavender;">
+    <div class="row">
+        <div class="col">
+            <div class="card">
+                <!-- Card header -->
+                <div class="card-header border-0">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h3 class="mb-0">Request Info</h3>
+                        </div>
+                        <div class="col-md-6" style="text-align: right;">
+                            <a class="nav-link" href="/admin/medcare/request/"><i class="ni ni-settings-gear-65"></i><span class="nav-link-text"> Click here to modify request data</span></a>
+                        </div>
+                    </div>
+                </div>
+                <!-- Light table -->
+                <div class="table-responsive">
+                    <table class="table align-items-center table-flush">
+                        <thead class="thead-light">
+                            <tr>
+                                <th scope="col" class="sort" data-sort="id">No.</th>
+                                <th scope="col" class="sort" data-sort="email">User email</th>
+                                <th scope="col" class="sort" data-sort="title">Title</th>
+                                <th scope="col" class="sort" data-sort="status">Status</th>
+                                <th scope="col" class="sort"></th>
+                            </tr>
+                        </thead>
+                        <tbody class="list">
+                            {% if request_list.exists %}
+                            {% for request in request_page_obj %}
+                            <tr>
+                                <th scope="row">
+                                    {{ forloop.counter }}
+                                </th>
+                                <td class="email">
+                                    <b>{{ request.user.email }}</b>
+                                </td>
+                                <td class="title">
+                                    <b>{{ request.title }}</b>
+                                </td>
+                                <td class="status">
+                                    {% if request.status == 'Sent' %}
+                                    <span class="badge badge-secondary">{% trans 'Sent' %}</span>
+                                    {% elif request.status == 'Checked' %}
+                                    <span class="badge badge-success">{% trans 'Checked' %}</span>
+                                    {% elif request.status == 'Answered' %}
+                                    <span class="badge badge-info">{% trans 'Answered' %}</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-right">
+                                    <div class="dropdown">
+                                        <a class="btn btn-sm btn-icon-only text-light" href="#" role="button"
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <i class="fas fa-ellipsis-v"></i>
+                                        </a>
+                                        <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
+                                            <a class="dropdown-item" href="">See details</a>
+                                            <a class="dropdown-item" href="/admin/medcare/request/{{request.id}}/change/">Edit</a>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            {% else %}
+                            <tr>
+                                <td>{% trans 'Do not have any requests yet!' %}</td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Card footer -->
+                <div class="card-footer py-4">
+                    <nav aria-label="...">
+                        <ul class="pagination justify-content-end mb-0">
+                            {% if request_page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ request_page_obj.previous_page_number }}"
+                                    tabindex="-1">
+                                    <i class="fas fa-angle-left"></i>
+                                    <span class="sr-only">Previous</span>
+                                </a>
+                            </li>
+                            {% endif %}
+
+                            {% for page_num in request_page_obj.paginator.page_range %}
+                            {% if request_page_obj.number == page_num %}
+                            <li class="page-item active">
+                                <a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a>
+                            </li>
+                            {% else %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a>
+                            </li>
+                            {% endif %}
+                            {% endfor %}
+
+                            {% if request_page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ request_page_obj.next_page_number }}">
+                                    <i class="fas fa-angle-right"></i>
+                                    <span class="sr-only">Next</span>
+                                </a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+
+<!-- Specific JS goes HERE -->
+{% block javascripts %}{% endblock javascripts %}

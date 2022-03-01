@@ -1,0 +1,62 @@
+{% load i18n %}
+{% if requests.exists %}
+{% for request in requests %}
+<tr>
+    <th scope="row">{{ forloop.counter }}</th>
+    <td>{{ request.title }}</td>
+    <td>{{ request.created_at }}</td>
+    <td>
+        {% if request.status == 'Sent' %}
+        <span class="badge badge-secondary">{% trans 'Sent' %}</span>
+        {% elif request.status == 'Checked' %}
+        <span class="badge badge-success">{% trans 'Checked' %}</span>
+        {% elif request.status == 'Answered' %}
+        <span class="badge badge-info">{% trans 'Answered' %}</span>
+        {% endif %}
+    </td>
+    <td class="text-right">
+        <a href="" data-toggle="modal" data-target="#requestModal_{{ request.id }}"><i class="far fa-eye" href=""></i></a>
+        <!-- Request Modal -->
+        <div class="modal fade text-left" id="requestModal_{{ request.id }}" tabindex="-1" role="dialog" aria-labelledby="requestModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="modal-title" id="exampleModalLabel">{% trans 'Request detail' %}</h3>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <h4>Title: {{ request.title }}</h4>
+                        <h4>Content:</h4>
+                        {% autoescape off %}
+                        {{ request.content }}
+                        {% endautoescape %}
+                        <h4>Answer:</h4>
+                        {% if request.answer %}
+                        {% autoescape off %}
+                        {{ request.answer }}
+                        {% endautoescape %}
+                        {% else %}
+                        {% trans 'Do not have any answer from admin yet!' %}
+                        {% endif %}
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary close_modal" data-dismiss="modal">{% trans 'Cancel' %}</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </td>
+    {% if request.status == "Sent" %}
+    <td><a href="" class="removeRequest" id="request_{{ request.id }}"><i class="fa fa-trash"></i></a></td>
+    {% else %}
+    <td></td>
+    {% endif %}
+</tr>
+{% endfor %}
+{% else %}
+<tr>
+    <td>{% trans 'Do not have any request yet!' %}</td>
+</tr>
+{% endif %}

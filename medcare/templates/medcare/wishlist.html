@@ -1,0 +1,188 @@
+{% extends "base_generic.html" %}
+{% load i18n %}
+{% load static %}
+{% block content %}
+<div class="container" style="margin-bottom: 100px;">
+    <div style="margin-top: 30px; margin-bottom: 30px;">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Wishlist</li>
+            </ol>
+        </nav>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <h4 class="count" style="margin-left: 10px; padding-top: 8px;">{{ count }} Items</h4>
+        </div>
+        <div class="col-md-8" style="text-align: right;">
+            <div class="row">
+                <div class="col-md-8" style="padding-right: 10px; padding-top: 8px;">
+                    <h4>Sort by : </h4>
+                </div>
+                <div class="col-md-4" style="padding-left: 0;">
+                    <select id="filter-box" style="width:auto;">
+                        <option value="relevance" selected>Relevance</option>
+                        <option value="rating">Average Customer Rating</option>
+                        <option value="increase">Price: Low to High</option>
+                        <option value="descrease">Price: High to Low</option>
+                        <option value="discount">Discount</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="pro" class="row products-list" style="margin-top:20px;">
+        {% for item in wishlist %}
+        <div class="col-md-3 product_{{ item.product.id }}" style="margin-bottom: 20px; border-radius: 8%;">
+            <div class="card" style="box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 50px; position:relative; z-index: 1;">
+                {% if item.product.valid_day %}
+                    <span class="ribbo">
+                        <span><b style="color:white;"><div style="color: yellow;">{{ item.product.discount }}%</div> OFF</b></span>
+                    </span>
+                {% endif %}
+                <div class="my-4 text-center border-0">
+                    <div>
+                        <a href="{% url 'product-detail' item.product.id %}">
+                            <img src="{{ item.product.image.url }}" style="align-content: center; border-radius: 8%;" width="180" height="180" alt="{{ item.product.product_name }}" target="_blank">
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body text-center">
+                    <span data-toggle="tooltip" data-placement="top" title="{{ item.product.product_name }}"></span>
+                        <p class="card-text mb-1 text-truncate">{{ item.product.product_name }}</p>
+                    </span>
+                    {% if item.product.valid_day %}
+                    <div class="row" style="margin-bottom: 16px;">
+                        <div class="col-md-6" style="text-align: right; padding-right: 5px;">
+                            <p class="card-text" style="color: dimgrey;"><del>{{ item.product.price|floatformat:2 }} $</del></p>
+                        </div>
+                        <div class="col-md-6" style="text-align: left; padding-left: 5px;">
+                            <p class="card-text font-weight-bold">{{ item.product.get_discount_price|floatformat:2 }} $</p>
+                        </div>
+                    </div>
+                    {% else %}
+                    <p class="card-text font-weight-bold">{{ item.product.price|floatformat:2 }} $</p>
+                    {% endif %}
+                    <div class="favorite_area">
+                        <div class="fav">
+                            <div class="row">
+                                <div class="col-md-8" style="padding-left: 45px;">
+                                    <a href="{% url 'product-detail' item.product.id %}" class="btn btn-primary" target="_blank">View details</a>
+                                </div>
+                                <div class="col-md-4" id="trashArea_{{ item.product.id }}">
+                                    <a class="trash" id="trash_{{ item.product.id }}" style="padding-left: 15px;">
+                                        <button class="btn" style="padding-left: 0px;"><i class="far fa-trash-alt"></i></i></button>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div id="cssLoader17" class="main-wrap main-wrap--white" style="z-index: 5; display: none;">
+    <div class="loader-background">
+        <div class="cssLoader17"></div>
+    </div>
+</div>
+<script>
+    $(window).bind("load", function () {
+        var delay = 1000;
+        document.getElementById("cssLoader17").style.display = "flex" 
+        setTimeout(function () {
+            document.getElementById("cssLoader17").style.display = "none" 
+        }, delay);
+    });
+</script>
+<script>
+    $(function() {
+        $(document).on('click', '.trash', function (e) {
+        // preventing default actions
+        event.preventDefault();
+        var $id = $(this).attr('id');
+        var target = $id.substring($id.indexOf('_') + 1);
+        // ajax call
+            $.ajax({
+                    type: "POST",
+                    // define url name
+                    url: "{% url 'wishlist' %}", 
+                    data : {    
+                    id : target, 
+                    action : 'remove',
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                },
+                // on success
+                success: function (response) {
+                    $(".product_"+target).remove();
+                    $("h4.count").html(response.count + " Items")
+                    toastr.options = {
+                        "debug": false,
+                        "newestOnTop": true,
+                        "progressBar": true,
+                        "positionClass": "toast-top-right",
+                        "preventDuplicates": false,
+                        "showDuration": "500",
+                        "hideDuration": "1000",
+                        "timeOut": "5000",
+                        "extendedTimeOut": "1000",
+                        "showEasing": "swing",
+                        "hideEasing": "linear",
+                        "showMethod": "fadeIn",
+                        "hideMethod": "fadeOut"
+                    }
+                    if (response.status == "success") {
+                        toastr["success"](response.message);
+                    }
+                    else if (response.status == "warning") {
+                        toastr["warning"](response.message);
+                    }
+                    else if (response.status == "error") {
+                        toastr["error"](response.message);
+                    }
+                },
+                // on error
+                error: function (response) {
+                    // alert the error if any error occured
+                    alert(response.status)
+                }
+            }); 
+        return false;
+    });   
+}); 
+</script>
+<script>
+    $('#filter-box').change(function () {
+        var val = $(this).val();
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'wishlist' %}",
+            data: {
+                type: val,
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+                action: 'filter'
+            },
+            success: function (data) {
+                document.getElementById("cssLoader17").style.display = "flex" 
+                setTimeout(function () {
+                    document.getElementById("cssLoader17").style.display = "none";
+                    $('#pro').html('');
+                    $('#pro').append(data.list)
+                }, 1000);
+            }.bind(this),
+            error: function(xhr, status, error) {
+                var err = JSON.parse(xhr.responseText);
+                alert(err.Message);
+            }
+        });
+});
+</script>
+{% endblock %}
+
+{% block jscode %}
+<script src="{% static 'js/alert.js' %}" defer></script>
+{% endblock %}

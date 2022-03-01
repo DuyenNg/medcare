@@ -1,0 +1,327 @@
+{% extends "base_generic.html" %}
+{% load static %}
+{% load i18n %}
+{% block content %}
+<div class="container my-4">
+    <div class="row">
+        <div class="col-md-8">
+            <h2 class="text-left my-4" style="font-size: 23px; margin-left: 15px;">{% trans 'Payment' %}</h2>
+            <h4 class="card-title" style="color: rgb(172, 175, 175); margin-left: 15px; margin-bottom: 20px;">Shipment Details</h4>
+            <form method="POST">
+                {% csrf_token %}
+                <div class="pl-lg-4">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="form-group focused">
+                                <label class="form-control-label" for="first_name">{% translate "First name" %}</label>
+                                <input type="text" id="first_name" name="first_name" class="form-control form-control-alternative" placeholder="{% translate 'First name' %}" value="{% if user.first_name %}{{ user.first_name }}{% endif %}">
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group focused">
+                                <label class="form-control-label" for="last_name">{% translate "Last name" %}</label>
+                                <input type="text" id="last_name" name="last_name" class="form-control form-control-alternative" placeholder="{% translate 'Last name' %}" value="{% if user.last_name %}{{ user.last_name }}{% endif %}">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="form-group focused">
+                                <label class="form-control-label" for="phone_number">{% translate "Phone Number" %}</label>
+                                <input id="phone_number" name="phone_number" value="{% if user.phone_number %}{{ user.phone_number }}{% endif %}" class="form-control form-control-alternative" placeholder="{% translate 'Phone number' %}" type="text">
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label class="form-control-label" for="email">{% translate "Email address" %}</label>
+                                <input disabled type="email" id="email" name="email" class="form-control form-control-alternative" placeholder="{% translate 'test@example.com' %}" value="{% if user.email %}{{ user.email }}{% endif %}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="pl-lg-4">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group focused">
+                                <label class="form-control-label" for="address">{% translate "Address" %}</label>
+                                <input id="shipping_address" name="shipping_address" value="{% if user.address %}{{ user.address }}{% endif %}" class="form-control form-control-alternative" placeholder="{% translate 'Address' %}" type="text">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" name="checkout" class="btn btn-success btn-block my-4" style="margin-left: 25px; width: 705px;">{% trans 'Pay for the Order' %}</button>
+            </form>
+            <img class="d-block w-100" src="{% static 'images/payment.jpg' %}" alt="Payment">
+        </div>
+        <div class="col-md-4">
+            <div class="container" style="box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px; margin-top: 40px; margin-bottom: 20px;">
+                <ul class="list-group list-group-flush">
+                    <h4 class="card-title" style="color: rgb(172, 175, 175); text-align: center; margin-top: 10px;">{% trans 'YOUR ORDER' %}</h4>
+                    <a class="text-info" href="{% url 'cart' %}" style="text-align: center; font-size: 12px; margin-bottom: 10px;"><u>Click here to change your order</u></a>
+                </ul>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <div class="row">
+                            <div class="col-md-5">
+                                <h4 class="card-title" style="margin-bottom: 0px;color: rgb(172, 175, 175);">Apply Coupon</h4>   
+                            </div>
+                            <div class="col-md-7 couponArea" style="text-align: right; padding-left: 0px;">
+                                <div class="coupon-name">{%if coupon_applied %}<a class="coupon-trash" id="coupon_{{ coupon_applied.coupon.pk }}"><i class="fas fa-backspace"></i></a>{% endif %} {{ coupon_applied.coupon.title }} <a href="#" data-toggle="modal" data-target="#couponModal"><i class="fas fa-chevron-circle-right" style="color: rgb(169, 163, 163);"></i></a></div>
+                            </div>
+                            <!-- Modal -->
+                            <div class="modal fade" id="couponModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h4 class="modal-title" style="color: black;" id="couponModalLongTitle">Apply Coupon</h4>
+                                            <button type="button" class="close-modal close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form>
+                                                <div class="form-group row" style="padding-left: 5px; padding-right: 15px;">
+                                                    <div class="col-sm-10">
+                                                        {{ coupon_form }}
+                                                    </div>
+                                                    <button type="submit" class="col-sm-2 btn btn-primary codeButton">Apply</button>
+                                                </div>
+                                            </form>
+                                            <h5 style="padding-left: 5px;">YOUR SAVED COUPON</h5>
+                                            {% for coupon in coupons %}
+                                            <div class="card" style="width: 460px; margin-left: 5px; padding-left: 10px; border-color: bisque; margin-bottom: 15px; background-color: beige;">
+                                                <div class="card-body">
+                                                    <div class="row">
+                                                        <div class="col-md-9">
+                                                            <h3 class="lead" style="font-size: 20px; margin-bottom: 2px; font-family:Arial, Helvetica, sans-serif;">{{ coupon.title }} {{ coupon.value }} % OFF</h3>
+                                                        </div>
+                                                        <div class="col-md-3" style="text-align: right;">
+                                                            <a class="couponApply" id="{{ coupon.id }}" href="">Apply</a>
+                                                        </div>
+                                                    </div>
+                                                    <p style="font-size: 12px; color: darkgrey;">{{ coupon.content }}</p>
+                                                    <span style="font-size: 10px;">Coupon code :<b> {{ coupon.code }}</b></span>
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <span style="font-size: 10px;">Validity : <b>{{ coupon.coupon_expired|date:"M d, Y" }}</b></span>
+                                                        </div>
+                                                        <div class="col-md-6" style="text-align: right;">
+                                                            <a style="font-size: 11px;"><u>View details</u></a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    {% for item in cart %}
+                    <li class="list-group-item">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <h5 class="card-text" style="color: darkslategray;">{{ item.product.product_name }}</h5>
+                            </div>
+                            <div class="col-md-4" style="text-align: right;">
+                                <small><b>{% trans 'Quantity: ' %}</b>{{ item.quantity }}</small>
+                                <br>
+                                <span>{{ item.get_total_price|floatformat:2 }} $</span>
+                            </div>
+                        </div>
+                    </li>
+                    {% endfor %}
+                    <li class="list-group-item">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h4 class="card-text">Items Total</h4>
+                                <h4 class="card-text">Coupon Discount</h4>
+                                <h4>{% trans 'TOTAL:' %}</h4>
+                            </div>
+                            <div class="col-md-6" style="text-align: right;">
+                                <h5 class="card-text" style="color: darkslategray;">{{ items_total|floatformat:2 }} $</h5>
+                                <h5 class="card-text coupon-discount" style="color: darkslategray;">- {{ coupon_discount|floatformat:2 }} $</h5>
+                                <span class="font-weight-bold text-success total">{{ total|floatformat:2 }} $</span>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+                
+            </div>
+            
+            <script>
+                // catch the form's submit event
+                $('.couponApply').click(function (event) {
+                    // create an AJAX call
+                    var $id = $(this).attr('id');
+                    $.ajax({
+                        url: "/medcare/checkout/",
+                        type: "POST",
+                        data: {
+                            id : $id,
+                            action : 'applyCoupon',
+                            csrfmiddlewaretoken: '{{ csrf_token }}',
+                        },
+                        // on success
+                        success: function (response) {
+                            $('.coupon-discount').remove();
+                            $( "<h5 class='card-text coupon-discount' style='color: darkslategray;'>- "+ response.coupon_discount +" $</h5>'").insertBefore( ".total" );
+                            $('.total').remove();
+                            $( "<span class='font-weight-bold text-success total'>" + response.total + " $</span>").insertAfter( ".coupon-discount" );
+                            $('.coupon-name').remove();
+                            $('.couponArea').append(
+                                '<div class="coupon-name"><a class="coupon-trash" id="coupon_'+ response.pk +'"><i class="fas fa-backspace"></i></a>'+ ' ' + response.applied_coupon +' <a href="#" data-toggle="modal" data-target="#couponModal"><i class="fas fa-chevron-circle-right" style="color: rgb(169, 163, 163);"></i></a></div>'
+                            )
+                            $(".close-modal").click();
+                            toastr.options = {
+                                "debug": false,
+                                "newestOnTop": true,
+                                "progressBar": true,
+                                "positionClass": "toast-top-right",
+                                "preventDuplicates": false,
+                                "showDuration": "500",
+                                "hideDuration": "1000",
+                                "timeOut": "5000",
+                                "extendedTimeOut": "1000",
+                                "showEasing": "swing",
+                                "hideEasing": "linear",
+                                "showMethod": "fadeIn",
+                                "hideMethod": "fadeOut"
+                            }
+                            if (response.status == "success") {
+                                toastr["success"](response.message);
+                            }
+                            else if (response.status == "warning") {
+                                toastr["warning"](response.message);
+                            }
+                            else if (response.status == "error") {
+                                toastr["error"](response.message);
+                            }
+                        },
+                        // on error
+                        error: function (response) {
+                            // alert the error if any error occured
+                            alert(response.status)
+                        }
+                    });
+                    return false;
+                })
+            </script>
+
+            <script>
+                // catch the form's submit event
+                $('.codeButton').click(function (event) {
+                    // create an AJAX call
+                    event.preventDefault();
+                    var code = $('input[name="code"]').val()
+                    $.ajax({
+                        data: {
+                            code : code,
+                            action : 'codeCoupon',
+                            csrfmiddlewaretoken: '{{ csrf_token }}',
+                        }, // get the form data
+                        type: 'POST', // GET or POST
+                        url: '/medcare/checkout/', // the file to call
+                        // on success
+                        success: function (response) {
+                            if (response.type == "success"){
+                                $('.coupon-discount').remove();
+                                $( "<h5 class='card-text coupon-discount' style='color: darkslategray;'>- "+ response.coupon_discount +" $</h5>'").insertBefore( ".total" );
+                                $('.total').remove();
+                                $( "<span class='font-weight-bold text-success total'>" + response.total + " $</span>").insertAfter( ".coupon-discount" );
+                                $('.coupon-name').remove();
+                                $('.couponArea').append(
+                                    '<div class="coupon-name"><a class="coupon-trash" id="coupon_'+ response.pk +'"><i class="fas fa-backspace"></i></a>'+ ' ' + response.applied_coupon +' <a href="#" data-toggle="modal" data-target="#couponModal"><i class="fas fa-chevron-circle-right" style="color: rgb(169, 163, 163);"></i></a></div>'
+                                )
+                                $(".close-modal").click();
+                            }
+                            else {
+                                $(".close-modal").click();
+                            }
+                            toastr.options = {
+                                "debug": false,
+                                "newestOnTop": true,
+                                "progressBar": true,
+                                "positionClass": "toast-top-right",
+                                "preventDuplicates": false,
+                                "showDuration": "500",
+                                "hideDuration": "1000",
+                                "timeOut": "5000",
+                                "extendedTimeOut": "1000",
+                                "showEasing": "swing",
+                                "hideEasing": "linear",
+                                "showMethod": "fadeIn",
+                                "hideMethod": "fadeOut"
+                            }
+                            if (response.status == "success") {
+                                toastr["success"](response.message);
+                            }
+                            else if (response.status == "warning") {
+                                toastr["warning"](response.message);
+                            }
+                            else if (response.status == "error") {
+                                toastr["error"](response.message);
+                            }
+                        },
+                        // on error
+                        error: function (response) {
+                            // alert the error if any error occured
+                            alert(response.status)
+                        }
+                    });
+                    return false;
+                })
+            </script>
+
+            <script>
+                // catch the form's submit event
+                $(function() {
+                    $(document).on('click', '.coupon-trash', function (e) {
+                    // create an AJAX call
+                    var $id = $(this).attr('id');
+                    var target = $id.substring($id.indexOf('_') + 1);
+                    $.ajax({
+                        url: "/medcare/checkout/",
+                        type: "POST",
+                        data: {
+                            id : target,
+                            action : 'removeCoupon',
+                            csrfmiddlewaretoken: '{{ csrf_token }}',
+                        },
+                        // on success
+                        success: function (response) {
+                            $('.coupon-discount').remove();
+                            $( "<h5 class='card-text coupon-discount' style='color: darkslategray;'>- 0 $</h5>'").insertBefore( ".total" );
+                            $('.total').remove();
+                            $( "<span class='font-weight-bold text-success total'>" + response.items_total + " $</span>").insertAfter( ".coupon-discount" );
+                            $('.coupon-name').remove();
+                            $('.couponArea').append(
+                                '<div class="coupon-name"><a href="#" data-toggle="modal" data-target="#couponModal"><i class="fas fa-chevron-circle-right" style="color: rgb(169, 163, 163);"></i></a></div>'
+                            )
+                            $(".close-modal").click();
+                        },
+                        // on error
+                        error: function (response) {
+                            // alert the error if any error occured
+                            alert(response.status)
+                        }
+                    });
+                    return false;
+                })
+            })
+            </script>
+
+            <span style="font-size: 70%; color:gray;line-height: 0px;"><em>
+                Medcare is a technology platform to facilitate transaction of business. The products and services are offered for sale by the sellers. The user authorizes the delivery personnel to be his agent for delivery of the goods. For details read 
+                <a class="font-weight-bold" style="color: coral;"> Terms & Conditions</a></em></span>
+        </div>
+    </div>
+    
+</div>
+{% endblock %}
+
+{% block jscode %}
+<script src="{% static 'js/alert.js' %}" defer></script>
+{% endblock %}

@@ -1,0 +1,194 @@
+{% extends 'admin/layouts/base.html' %}
+{% load i18n %}
+{% load static %}
+{% block title %} All orders {% endblock title %}
+
+{% block content %}
+
+<div class="header bg-light pb-6">
+    <div class="container-fluid">
+        <div class="header-body">
+            <div class="row align-items-center py-4">
+                <div class="col-lg-6 col-7">
+                    <h6 class="h2 text-dark d-inline-block mb-0">Orders</h6>
+                    <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+                        <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                            <li class="breadcrumb-item"><a href="{% url 'dashboard' %}"><i class="fas fa-home"></i></a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Order</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Page content -->
+<div class="container-fluid mt--6">
+    <div class="row">
+        <div class="col">
+            <div class="card">
+                <!-- Card header -->
+                <div class="card-header border-0">
+                    <h3 class="mb-0">Order Info</h3>
+                </div>
+                <!-- Light table -->
+                <div class="table-responsive">
+                    <table class="table align-items-center table-flush">
+                        <thead class="thead-light">
+                            <tr>
+                                <th scope="col" class="sort" data-sort="id">ID</th>
+                                <th scope="col" class="sort" data-sort="username">Email</th>
+                                <th scope="col" class="sort" data-sort="phone_number">Phone number</th>
+                                <th scope="col" class="sort" data-sort="shipping_address">Shipping address</th>
+                                <th scope="col" class="sort" data-sort="price">Price</th>
+                                <th scope="col" class="sort" data-sort="date_created">Date created</th>
+                                <th scope="col" class="sort" data-sort="status">Status</th>
+                                <th scope="col" class="sort"></th>
+                                <th scope="col" class="sort"></th>
+                            </tr>
+                        </thead>
+                        <tbody class="order-list">
+                            {% if order_list.exists %}
+                            {% for order in page_obj %}
+                            <tr id="{{ order.id }}">
+                                <th scope="row">
+                                    <div id="number_{{ order.id }}">{{ forloop.counter }}</div>
+                                </th>
+                                <td class="username">
+                                    {{ order.user.email }}
+                                </td>
+                                <td class="phone_number">
+                                    {{ order.phone_number }}
+                                </td>
+                                <td class="shipping_address">
+                                    <span data-toggle="tooltip" data-placement="top" title="{{ order.shipping_address }}">{{ order.shipping_address|truncatechars:20 }}</span>
+                                </td>
+                                <td class="price">
+                                    {{ order.total_price }} $
+                                </td>
+                                <td class="created_at">
+                                    {{ order.created_at }} 
+                                </td>
+                                <td>
+                                    {% if order.status == 'A' %}
+                                    <span class="badge badge-success">{% trans 'Approved' %}</span>
+                                    {% elif order.status == 'W' %}
+                                    <span class="badge badge-warning">{% trans 'Waiting' %}</span>
+                                    {% elif order.status == 'R' %}
+                                    <span class="badge badge-danger">{% trans 'Rejected' %}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if perms.catalog.can_mark_returned %}
+                                    <form method="POST" enctype="multipart/form-data" class="checkStatus" id="check_{{ order.id }}" action="{% url 'admin-check-order-status' order.id %}">
+                                        {% csrf_token %}
+                                        <select id="status_{{ order.id }}" name="status" style="width: 95px; height: 43px; border-color:silver; border-radius: 8%;">
+                                            <option {% if order.status == 'W' %} selected {%endif%} {% if order.status == 'A' or order.status == 'R' %}disabled{% endif %} value="W">{% trans 'Waiting' %}</option>
+                                            <option {% if order.status == 'A' %} selected {%endif%} {% if order.status == 'R' %}disabled{% endif %} value="A">{% trans 'Approved' %}</option>
+                                            <option {% if order.status == 'R' %} selected {%endif%} value="R">{% trans 'Rejected' %}</option>
+                                        </select>
+                                        <button class="btn btn-success float-right text-center">{% trans 'Confirm' %}</button>
+                                    </form>
+                                    {% endif %}
+                                </td>
+                                <td class="text-right">
+                                    <div class="dropdown">
+                                        <a class="btn btn-sm btn-icon-only text-light" href="#" role="button"
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <i class="fas fa-ellipsis-v"></i>
+                                        </a>
+                                        <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
+                                            <a class="dropdown-item" href="{% url 'admin-booking-detail' order.id %}">See details</a>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            {% else %}
+                            <tr>
+                                <td>{% trans 'Do not have any order yet!' %}</td>
+                            </tr>
+                            {% endif %}
+                            <script>
+                                // catch the form's submit event
+                                $('.checkStatus').submit(function (event) {
+                                    // create an AJAX call
+                                    event.preventDefault();
+                                    var $id = $(this).attr('id');
+                                    var target = $id.substring($id.indexOf('_') + 1);
+                                    var num = $("#number_"+target).html();
+                                    $.ajax({
+                                        data: {
+                                            'status': $('select#status_'+target).val()
+                                        }, // get the form data
+                                        type: $(this).attr('method'), // GET or POST
+                                        url: $(this).attr('action'), // the file to call
+                                        // on success
+                                        success: function (data) {
+                                            $("tr#"+target).html('');
+                                            $("tr#"+target).append(data.list[0]);
+                                            $("#number_"+target).append(num);
+                                        },
+                                        // on error
+                                        error: function (data) {
+                                            // alert the error if any error occured
+                                            alert(data.list[1].status)
+                                        }
+                                    });
+                                    return false;
+                                })
+                            </script> 
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Card footer -->
+                <div class="card-footer py-4">
+                    <nav aria-label="...">
+                        <ul class="pagination justify-content-end mb-0">
+                            {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}" tabindex="-1">
+                                    <i class="fas fa-angle-left"></i>
+                                    <span class="sr-only">Previous</span>
+                                </a>
+                            </li>
+                            {% endif %}
+                            
+                            {% for page_num in page_obj.paginator.page_range %}
+                                {% if page_obj.number == page_num %}
+                                <li class="page-item active">
+                                    <a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a>
+                                </li>
+                                {% else %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a>
+                                </li>
+                                {% endif %}
+                            {% endfor %}
+
+                            {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}">
+                                    <i class="fas fa-angle-right"></i>
+                                    <span class="sr-only">Next</span>
+                                </a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+
+<!-- Specific JS goes HERE -->
+{% block javascripts %}{% endblock javascripts %}
+
+
+{% block jscode %}
+<script src="{% static 'js/alert.js' %}" defer></script>
+{% endblock %}

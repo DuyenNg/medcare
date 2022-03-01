@@ -1,0 +1,132 @@
+{% extends "base_generic.html" %}
+{% load i18n %}
+{% load static %}
+{% block content %}
+<div class="container" style="margin-top: 30px; margin-bottom: 30px;">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'brand-list' %}">All brands</a></li>
+        </ol>
+    </nav>
+</div>
+<div class="container">
+    <div id="charFilter"class="d-flex flex-row" style="margin-top: 30px;">
+        <button class="index" id="A">A</button>
+        <button class="index" id="B">B</button>
+        <button class="index" id="C">C</button>
+        <button class="index" id="D">D</button>
+        <button class="index" id="E">E</button>
+        <button class="index" id="F">F</button>
+        <button class="index" id="G">G</button>
+        <button class="index" id="H">H</button>
+        <button class="index" id="I">I</button>
+        <button class="index" id="J">J</button>
+        <button class="index" id="K">K</button>
+        <button class="index" id="L">L</button>
+        <button class="index" id="M">M</button>
+        <button class="index" id="N">N</button>
+        <button class="index" id="O">O</button>
+        <button class="index" id="P">P</button>
+        <button class="index" id="Q">Q</button>
+        <button class="index" id="R">R</button>
+        <button class="index" id="S">S</button>
+        <button class="index" id="T">T</button>
+        <button class="index" id="U">U</button>
+        <button class="index" id="V">V</button>
+        <button class="index" id="W">W</button>
+        <button class="index" id="X">X</button>
+        <button class="index" id="Y">Y</button>
+        <button class="index" id="Z">Z</button>
+    </div>
+    <h4 class="result" style="margin-top: 30px;">Having {{ count }} {% if count == 0 %} result{% else %} results{% endif %}</h4>
+    <div id="pro" class="row products-list" style="margin-top:40px; margin-bottom: 100px;">
+        {% for brand in brands %}
+        <div class="col-md-3" style="margin-bottom: 20px; border-radius: 8%;">
+            <div class="card" style="box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 50px; position:relative; z-index: 1;">
+                <div class="my-4 text-center border-0">
+                    <div>
+                        <a href="{% url 'brand-get' brand.pk %}">
+                            <img src="{{ brand.image.url }}" style="align-content: center; border-radius: 8%;" width="180" height="180" alt="{{ brand.name }}">
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body text-center">
+                    <span data-toggle="tooltip" data-placement="top" title="{{ brand.name }}"></span>
+                        <p class="card-text mb-1 text-truncate">{{ brand.name }}</p>
+                    </span>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div id="cssLoader17" class="main-wrap main-wrap--white" style="z-index: 5; display: none;">
+    <div class="loader-background">
+        <div class="cssLoader17"></div>
+    </div>
+</div>
+
+<script>
+    $('.index').click(function(event){
+        // preventing default actions
+        event.preventDefault();
+        var char = $(this).attr('id');
+        // ajax call
+            $.ajax({
+                    type: "POST",
+                    // define url name
+                    url: "{% url 'brand-list' %}", 
+                    data : {    
+                    char : char, 
+                    action : 'filter',
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                },
+                // handle a successful response
+                success: function (data) {
+                    document.getElementById("cssLoader17").style.display = "flex" 
+                    setTimeout(function () {
+                        document.getElementById("cssLoader17").style.display = "none";
+                        $('#pro').html(data.list[0]);
+                        $('#title-char').html('Medicine Index starting with - '+ data.list[1].char +'');
+                        if (data.list[1].count != 0){
+                            $('h4.result').html('Having '+ data.list[1].count +' results');
+                        }
+                        else{
+                            $('h4.result').html('Having 0 result');
+                        }
+                    }, 1000);
+                }.bind(this),
+                error: function(xhr, status, error) {
+                    var err = JSON.parse(xhr.responseText);
+                    alert(err.Message);
+                }
+            }); 
+    });    
+</script>
+
+<script>
+    // Get the container element
+    var btnContainer = document.getElementById("charFilter");
+
+    // Get all buttons with class="btn" inside the container
+    var btns = btnContainer.getElementsByClassName("index");
+
+    // Loop through the buttons and add the active class to the current/clicked button
+    for (var i = 0; i < btns.length; i++) {
+        btns[i].addEventListener("click", function() {
+            var current = document.getElementsByClassName("index-active");
+            current[0].className = current[0].className.replace(" index-active", "");
+        });
+    }
+
+    for (var i = 0; i < btns.length; i++) {
+        btns[i].addEventListener("click", function() {      
+            this.className += " index-active";
+        });
+    }
+
+</script>
+
+{% endblock %}
