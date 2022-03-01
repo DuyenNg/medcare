@@ -172,7 +172,6 @@ textarea {
 .header {
   position: relative;
   min-height: 600px;
-  /* background-image: url("../img/profile-cover.jpeg"); */
   background-size: cover;
   background-position: center top;
 }
