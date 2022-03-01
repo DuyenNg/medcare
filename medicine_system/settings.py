@@ -161,7 +161,7 @@ EMAIL_USE_SSL = False
 
 HOST = '127.0.0.1:7891'
 
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS")
+ALLOWED_HOSTS=['*','0.0.0.0','127.0.0.1','https://calm-spire-01108.herokuapp.com/']
 
 SESSION_SAVE_EVERY_REQUEST = True
 
