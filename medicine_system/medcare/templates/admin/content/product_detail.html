@@ -1,0 +1,237 @@
+{% extends 'admin/layouts/base.html' %}
+{% load i18n %}
+{% load static %}
+{% block title %} Product detail {% endblock title %}
+
+{% block content %}
+
+<div class="header bg-light pb-6">
+    <div class="container-fluid">
+        <div class="header-body">
+            <div class="row align-items-center py-4">
+                <div class="col-lg-6 col-7">
+                    <h6 class="h2 text-dark d-inline-block mb-0">Product Info</h6>
+                    <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+                        <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                            <li class="breadcrumb-item"><a href="{% url 'dashboard' %}"><i class="fas fa-home"></i></a>
+                            </li>
+                            <li class="breadcrumb-item active" aria-current="page">Product</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid mt--6" style="background-color:lavender;">
+    <div class="row">
+        <div class="col">
+            <div class="card">
+                <!-- Card header -->
+                <div class="card-header border-0">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h3 class="mb-0">Product # {{ product.id }}</h3>
+                        </div>
+                        <div class="col-md-6" style="text-align: right;">
+                            <a class="nav-link" href="/admin/medcare/product/{{ product.id }}/change/"><i class="ni ni-settings-gear-65"></i><span
+                                    class="nav-link-text"> Click here to modify product data</span></a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="container rounded bg-white mb-5">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="p-3 py-5">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h4 class="text-right">Product Settings</h4>
+                                </div>
+                                <div class="alert-area" style="margin-bottom:20px;"></div>
+                                <div class="row mt-3">
+                                    <div class="col-md-12">
+                                        <label class="labels">Product name</label>
+                                        <input id="product_name" type="text" class="form-control" placeholder="product name"
+                                            value="{% if product.product_name %}{{ product.product_name }}{% endif %}">
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-md-12">
+                                        <label class="required" for="id_image">Image</label>
+                                        <p class="file-upload">
+                                            Currently: <a href="/media/{{ product.image }}">{{ product.image }}</a><br>
+                                            Change: <input type="file" name="image" accept="image/*" id="id_image">
+                                        </p>     
+                                    </div>
+                                </div>
+                                <div class="row mt-2">
+                                    <div class="col-md-6">
+                                        <label class="labels">Category</label>
+                                        <select name="category" required="" id="category_{{ product.id }}" class="form-control">
+                                            <option value="">---------</option>
+                                            {% for category in categories %}
+                                            <option value="{{ category.id }}" {% if category.name == product.category.name %}selected=""{% endif %} >{{ category.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="labels">Brand</label>
+                                        <select name="brand" required="" id="brand_{{ product.id }}" class="form-control">
+                                            <option value="">---------</option>
+                                            {% for brand in brands %}
+                                            <option value="{{ brand.id }}" {% if brand.name == product.brand.name %}selected=""{% endif %} >{{ brand.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row mt-2">
+                                    <div class="col-md-6">
+                                        <label class="labels">Age</label>
+                                        <select name="age" required="" id="age_{{ product.id }}" class="form-control">
+                                            <option value="">---------</option>
+                                            {% for age in ages %}
+                                            <option value="{{ age.id }}" {% if age.name == product.age.name %}selected=""{% endif %} >{{ age.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="labels">Gender</label>
+                                        <select name="gender" required="" id="gender_{{ product.id }}" class="form-control">
+                                            <option value="">---------</option>
+                                            {% for gender in genders %}
+                                            <option value="{{ gender.id }}" {% if gender.name == product.gender.name %}selected=""{% endif %} >{{ gender.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row mt-2">
+                                    <div class="col-md-6">
+                                        <label class="labels">Form</label>
+                                        <select name="form" required="" id="form_{{ product.id }}" class="form-control">
+                                            <option value="">---------</option>
+                                            {% for form in forms %}
+                                            <option value="{{ form.id }}" {% if form.name == product.form.name %}selected=""{% endif %} >{{ form.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row mt-2">
+                                    <div class="col-md-6">
+                                        <label class="labels">Tag</label>
+                                        <select name="tag" required="" id="tag_{{ product.id }}" class="form-control" multiple>
+                                            <option value="">---------</option>
+                                            {% for tag in tags %}
+                                            <option value="{{ tag.id }}" {% for i in product.tag.all %}{% if tag.name == i.name %}selected=""{% endif %}{% endfor %} >{{ tag.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-md-12">
+                                        {{ product_form.text | safe }}
+                                        {{ product_form.media }}
+                                        {{ product_form.as_p }}
+                                    </div>
+                                </div>
+                                <div class="row mt-2">
+                                    <div class="col-md-6">
+                                        <label class="labels">Price</label>
+                                        <input id="price" type="number" class="form-control" placeholder="price"
+                                            value="{% if product.price %}{{ product.price }}{% endif %}">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="labels">Quantity</label>
+                                        <input id="quantity" type="number" min="0" class="form-control" placeholder="quantity"
+                                            value="{% if product.quantity %}{{ product.quantity }}{% endif %}">
+                                    </div>
+                                </div>
+                                <div class="row mt-2">
+                                    <div class="col-md-6">
+                                        <label class="labels">Discount</label>
+                                        <input id="discount" type="number" class="form-control" placeholder="discount"
+                                            value="{% if product.discount %}{{ product.discount }}{% endif %}">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="labels">Discount expired</label>
+                                        <input id="discount_expired" type="datetime-local" class="form-control" placeholder="discount expired"
+                                            value="{% if discount_expired %}{{ discount_expired }}{% endif %}">
+                                    </div>
+                                </div>
+                                <div class="row mt-2">
+                                    <div class="col-md-6">
+                                        <label class="labels">Created at</label>
+                                        <input id="created_at" type="text" class="form-control" placeholder="created at"
+                                            value="{% if product.created_at %}{{ product.created_at }}{% endif %}" disabled>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-5 text-center">
+                                <a class="updateProduct" id="{{ product.id }}" href="">
+                                    <button class="btn btn-primary col-md-12" type="button">Update</button>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+
+<!-- Specific JS goes HERE -->
+{% block javascripts %}
+<script>
+    $(function () {
+        $(document).on('click', '.updateProduct', function (e) {
+            // preventing default actions
+            event.preventDefault();
+            var $id = $(this).attr('id');
+            var form_data = new FormData();
+            form_data.append('product_name', $("#product_name").val());
+            form_data.append('image', $("#id_image")[0].files[0]);
+            form_data.append('category', $('select#category_'+$id).val());
+            form_data.append('brand', $('select#brand_'+$id).val());
+            form_data.append('age', $('select#age_'+$id).val());
+            form_data.append('gender', $('select#gender_'+$id).val());
+            form_data.append('form', $('select#form_'+$id).val());
+            form_data.append('tags', $('select#tag_'+$id).val());
+            form_data.append('description', CKEDITOR.instances['id_description'].getData());
+            form_data.append('price', $("#price").val());
+            form_data.append('quantity', $("#quantity").val());
+            form_data.append('discount', $("#discount").val());
+            form_data.append('discount_expired', $("#discount_expired").val());
+            form_data.append('action', 'updateProduct');
+            form_data.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+            // ajax call
+            $.ajax({
+                type: "POST",
+                // define url name
+                url: "/medcare/admin/product/" + $id,
+                dataType:'json',
+                data:form_data,
+                cache : false,
+                contentType: false,
+                processData: false,
+                // on success
+                success: function (response) {
+                    $('.alert-area').append(
+                        '<div class="alert alert-'+ response.status +'" role="alert" style="margin-bottom: 10px;">'+
+                            '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>'+
+                                response.message+
+                        '</div>'
+                    )
+                },
+                // on error
+                error: function (response) {
+                    // alert the error if any error occured
+                    alert(response.status)
+                }
+            });
+            return false;
+        });
+    }); 
+</script>
+{% endblock javascripts %}

@@ -1,0 +1,18 @@
+{% for brand in brands %}
+<div class="col-md-3" style="margin-bottom: 20px; border-radius: 8%;">
+    <div class="card" style="box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 50px; position:relative; z-index: 1;">
+        <div class="my-4 text-center border-0">
+            <div>
+                <a href="{% url 'brand-get' brand.pk %}">
+                    <img src="{{ brand.image.url }}" style="align-content: center; border-radius: 8%;" width="180" height="180" alt="{{ brand.name }}">
+                </a>
+            </div>
+        </div>
+        <div class="card-body text-center">
+            <span data-toggle="tooltip" data-placement="top" title="{{ brand.name }}"></span>
+                <p class="card-text mb-1 text-truncate">{{ brand.name }}</p>
+            </span>
+        </div>
+    </div>
+</div>
+{% endfor %}

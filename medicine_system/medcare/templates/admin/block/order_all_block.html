@@ -1,0 +1,60 @@
+{% load i18n %}
+{% if order_page_obj %}
+{% for order in order_page_obj %}
+<tr id="{{ order.id }}">
+    <th scope="row">
+        <div id="number_{{ order.id }}">{{ forloop.counter }}</div>
+    </th>
+    <td class="username">
+        {{ order.user.email }}
+    </td>
+    <td class="phone_number">
+        {{ order.phone_number }}
+    </td>
+    <td class="shipping_address">
+        <span data-toggle="tooltip" data-placement="top" title="{{ order.shipping_address }}">{{ order.shipping_address|truncatechars:20 }}</span>
+    </td>
+    <td class="price">
+        {{ order.total_price }} $
+    </td>
+    <td class="created_at">
+        {{ order.created_at }} 
+    </td>
+    <td>
+        {% if order.status == 'A' %}
+        <span class="badge badge-success">{% trans 'Approved' %}</span>
+        {% elif order.status == 'W' %}
+        <span class="badge badge-warning">{% trans 'Waiting' %}</span>
+        {% elif order.status == 'R' %}
+        <span class="badge badge-danger">{% trans 'Rejected' %}</span>
+        {% endif %}
+    </td>
+    <td>
+        {% if perms.catalog.can_mark_returned %}
+        <form method="POST" enctype="multipart/form-data" class="checkStatus" id="check_{{ order.id }}" action="{% url 'admin-check-order-status' order.id %}">
+            {% csrf_token %}
+            <select id="status_{{ order.id }}" name="status" style="width: 95px; height: 43px; border-color:silver; border-radius: 8%;">
+                <option {% if order.status == 'W' %} selected {%endif%} {% if order.status == 'A' or order.status == 'R' %}disabled{% endif %} value="W">{% trans 'Waiting' %}</option>
+                <option {% if order.status == 'A' %} selected {%endif%} {% if order.status == 'R' %}disabled{% endif %} value="A">{% trans 'Approved' %}</option>
+                <option {% if order.status == 'R' %} selected {%endif%} value="R">{% trans 'Rejected' %}</option>
+            </select>
+            <button class="btn btn-success float-right text-center">{% trans 'Confirm' %}</button>
+        </form>
+        {% endif %}
+    </td>
+    <td class="text-right">
+        <div class="dropdown">
+            <a class="btn btn-sm btn-icon-only text-light" href="#" role="button"
+                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="fas fa-ellipsis-v"></i>
+            </a>
+            <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
+                <a class="dropdown-item" href="{% url 'admin-booking-detail' order.id %}">See details</a>
+            </div>
+        </div>
+    </td>
+</tr>
+{% endfor %}
+{% else %}
+<p style="margin-left: 20px; margin-top: 10px;">No orders found.</p>
+{% endif %}

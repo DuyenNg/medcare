@@ -1,0 +1,49 @@
+{% for item in products %}
+    <div class="col-md-3 product_{{ item.product.id }}" style="margin-bottom: 20px; border-radius: 8%;">
+        <div class="card" style="box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 50px; position:relative; z-index: 1;">
+            {% if item.product.valid_day and item.product.discount > 0 %}
+                <span class="ribbo">
+                    <span><b style="color:white;"><div style="color: yellow;">{{ item.product.discount }}%</div> OFF</b></span>
+                </span>
+            {% endif %}
+            <div class="my-4 text-center border-0">
+                <div>
+                    <a href="{% url 'product-detail' item.product.pk %}" target="_blank">
+                        <img src="{{ item.product.image.url }}" style="align-content: center; border-radius: 8%;" width="180" height="180" alt="{{ item.product.product_name }}" target="_blank">
+                    </a>
+                </div>
+            </div>
+            <div class="card-body text-center">
+                <span data-toggle="tooltip" data-placement="top" title="{{ item.product.product_name }}"></span>
+                    <p class="card-text mb-1 text-truncate">{{ item.product.product_name }}</p>
+                </span>
+                {% if item.product.valid_day and item.product.discount > 0 %}
+                <div class="row" style="margin-bottom: 16px;">
+                    <div class="col-md-6" style="text-align: right; padding-right: 5px;">
+                        <p class="card-text" style="color: dimgrey;"><del>{{ item.product.price|floatformat:2 }} $</del></p>
+                    </div>
+                    <div class="col-md-6" style="text-align: left; padding-left: 5px;">
+                        <p class="card-text font-weight-bold">{{ item.product.get_discount_price|floatformat:2 }} $</p>
+                    </div>
+                </div>
+                {% else %}
+                <p class="card-text font-weight-bold">{{ item.product.price|floatformat:2 }} $</p>
+                {% endif %}
+                <div class="favorite_area">
+                    <div class="fav">
+                        <div class="row">
+                            <div class="col-md-8" style="padding-left: 45px;">
+                                <a href="{% url 'product-detail' item.product.pk %}" class="btn btn-primary" target="_blank">View details</a>
+                            </div>
+                            <div class="col-md-4" id="trashArea_{{ item.product.id }}">
+                                <a class="trash" id="trash_{{ item.product.id }}" style="padding-left: 15px;">
+                                    <button class="btn" style="padding-left: 0px;"><i class="far fa-trash-alt"></i></i></button>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endfor %}

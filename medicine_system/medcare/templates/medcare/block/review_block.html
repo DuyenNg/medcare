@@ -1,0 +1,85 @@
+{% load i18n %}
+{% for rv in results %}
+<div class="row" id="rvnum_{{ rv.id }}"> 
+    <div class="col-md-8">
+        <h3 class="card-title" style="color:rgb(74, 80, 80)">{{ rv.user.first_name }} {{ rv.user.last_name }} </h3>
+        <div class="row">
+            <div class="col-md-1">
+                <a class="badge badge-success"><span style="color: white; font-size: 17px;">{{ rv.rate }} <i class="fas fa-star" style="color:white"></i></span></a>
+            </div>
+            <div class="col-md-11" style="padding-left: 25px;">
+                <h4 class="card-title" style="color:rgb(74, 80, 80)">Verified Buyer</h4>
+            </div>
+        </div>
+        <p style="margin-top: 15px;"><b>{{ rv.title }}</b></p>
+        <p>{{ rv.content }}</p>
+        <div class="row">
+            {% if user.is_authenticated %}
+                {% if rv.id in favorite_review_ids %}
+                <div class="col-md-5" id="favorArea_{{ rv.id }}">
+                    <a class="helpful" href="" id="helpful_{{ rv.id }}">
+                        <h3 class="card-title" style="color: #bb8672;; font-size: 18px; margin-top: 8px;">
+                            <i class="far fa-thumbs-up" style="color: #bb8672;"></i> HELPFUL</h3>
+                    </a>
+                </div>
+                {% else %}
+                <div class="col-md-5" id="favorArea_{{ rv.id }}">
+                    <a class="helpful" href="" id="helpful_{{ rv.id }}">
+                        <h3 class="card-title" style="color: rgb(172, 175, 175); font-size: 18px; margin-top: 8px;">
+                            <i class="far fa-thumbs-up"></i> HELPFUL</h3>
+                    </a>
+                </div>
+                {% endif %}
+            {% else %}
+            <div class="col-md-5">
+                <a href="{% url 'login' %}">
+                    <h3 class="card-title" style="color: rgb(172, 175, 175); font-size: 18px; margin-top: 8px;">
+                        <i class="far fa-thumbs-up"></i> HELPFUL</h3>
+                </a>
+            </div>
+            {% endif %}
+            <div class="col-md-5">
+                <a href="" data-toggle="modal" data-target="#reportModal">
+                <h3 class="card-title" style="color: rgb(172, 175, 175); font-size: 18px; margin-top: 8px;">
+                    <i class="fas fa-info-circle"></i> REPORT</h3></a>
+                    <!-- Report Modal -->
+                    <div class="modal fade" id="reportModal" tabindex="-1" role="dialog" aria-labelledby="reportModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h3 class="modal-title" id="exampleModalLabel">{% trans 'Report review' %}</h3>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    {% trans 'If you find this review inappropriate, please notify us by filling this form and clicking the summit button below and we will look into the issue' %}
+                                    <form>
+                                        <div class="mb-3">
+                                            <label for="title-name" class="col-form-label">Title:</label>
+                                            <input type="text" class="form-control" id="title-name">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="content-text" class="col-form-label">Content:</label>
+                                            <textarea class="form-control" id="content-text"></textarea>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary close_modal" data-dismiss="modal">{% trans 'Cancel' %}</button>
+                                    <a class="reportReview" id="row_{{ rv.id }}" href="">
+                                        <button type="submit" name="report" class="btn btn-primary">{% trans 'Summit' %}</button>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4" style="text-align: right;">
+        {{ rv.created_at }}
+    </div>
+</div>
+<hr id="num_{{ rv.id }}">
+{% endfor %}

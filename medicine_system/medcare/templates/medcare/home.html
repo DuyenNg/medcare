@@ -1,0 +1,646 @@
+{% extends "base_generic.html" %}
+{% load i18n %}
+{% load static %}
+{% block content %}
+{% include 'medcare/carousel.html' %}
+
+<!-- Introdution title area -->
+<div class="px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center border-bottom">
+    <h3 style="color: black;">{% trans 'Medcare' %}</h3>
+    <p class="lead">Vietnam’s Leading Online Pharmacy & Healthcare Platform</p>
+</div>
+
+<div style="background-color: #f1f1f1b9; text-align: center;" class="border-bottom">
+    <img src="{% static 'images/ads_4.png' %}" width="1200" height="400" class="img-fluid" style="margin-top: 2%; margin-bottom: 2%;" alt="Advert">
+</div>
+
+<main role="main">
+    <!-- Brand area -->
+    <section class="row brand_area border-bottom" style="margin-top:20px;">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-10">
+                    <h4 style="color: black;">Featured brands</h4>
+                </div>
+                <div class="col-md-2" style="text-align: right;">
+                    <a href="{% url 'brand-list' %}"><h4>See more<i class="fas fa-chevron-right" style="margin-left: 5px;"></i></h4></a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="MultiCarousel" data-items="1,3,5,6" data-slide="1" id="MultiCarousel"  data-interval="1000">
+                    <div class="MultiCarousel-inner">
+                        {% for brand in brands %}
+                        <div class="item">
+                            <a href="{% url 'brand-get' brand.pk %}" style="display: flex; flex-direction: column; justify-content: center; text-align: center;"> 
+                                <div class="pad15" style="align-content: center; border-radius: 8%;">
+                                    <img src="{{ brand.image.url }}" alt="{{ brand.name }}" width="120" height="120" style="padding-top: 5px; border-radius: 8%;" ></img>
+                                    <p class="lead" style="margin-top: 10%;">{{ brand.name }}</p>
+                                </div>
+                            </a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <button class="btn btn-secondary leftLst" style="height: 50px; width: 50px; text-align: center;"><i class="fas fa-arrow-left"></i></button>
+                    <button class="btn btn-secondary rightLst" style="height: 50px; width: 50px; text-align: center;"><i class="fas fa-arrow-right"></i></button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div style="background-color: #f1f1f1e0; text-align: center; height: 50px;" class="border-bottom" ></div>
+
+    <!-- Category area -->
+    <section class="row category_area border-bottom" style="margin-top:20px;">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-10">
+                    <h4 style="color: black;">Popular categories</h4>
+                </div>
+                <div class="col-md-2" style="text-align: right;">
+                    <a href="{% url 'category-list' %}"><h4>See more<i class="fas fa-chevron-right" style="margin-left: 5px;"></i></h4></a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="MultiCarousel" data-items="1,3,5,6" data-slide="1" id="MultiCarousel"  data-interval="1000">
+                    <div class="MultiCarousel-inner">
+                        {% for cate in popular_categories %}
+                        <div class="item">
+                            <a href="{% url 'category-get' cate.pk %}" style="display: flex; flex-direction: column; justify-content: center; text-align: center;">
+                                <div class="pad15" style="align-content: center; border-radius: 8%;">
+                                    <img src="{{ cate.image.url }}" alt="{{ cate.name }}" width="120" height="120" style="padding-top: 5px; border-radius: 8%;" ></img>
+                                    <p class="lead" style="margin-top: 10%;">{{ cate.name }}</p>
+                                </div>
+                            </a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <button class="btn btn-secondary leftLst" style="height: 50px; width: 50px; text-align: center;"><i class="fas fa-arrow-left"></i></button>
+                    <button class="btn btn-secondary rightLst" style="height: 50px; width: 50px; text-align: center;"><i class="fas fa-arrow-right"></i></button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div style="background-color: #f1f1f1e0; text-align: center; height: 50px;" class="border-bottom"></div>
+
+    <!-- Health concern area -->
+    <section class="row category_area border-bottom" style="margin-top:20px;">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-10">
+                    <h4 style="color: black;">Shop by Health Concerns</h4>
+                </div>
+            </div>
+            <div class="row">
+                <div class="MultiCarousel" data-items="1,3,5,6" data-slide="1" id="MultiCarousel"  data-interval="1000">
+                    <div class="MultiCarousel-inner">
+                        {% for cate in health_concern %}
+                        <div class="item">
+                            <a href="{% url 'category-get' cate.pk %}" style="display: flex; flex-direction: column; justify-content: center; text-align: center;">
+                                <div class="pad15" style="align-content: center; border-radius: 8%;">
+                                    <img src="{{ cate.image.url }}" alt="{{ cate.name }}" width="120" height="120" style="padding-top: 5px; border-radius: 8%;" ></img>
+                                    <p class="lead" style="margin-top: 10%;">{{ cate.name }}</p>
+                                </div>
+                            </a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <button class="btn btn-secondary leftLst" style="height: 50px; width: 50px; text-align: center;"><i class="fas fa-arrow-left"></i></button>
+                    <button class="btn btn-secondary rightLst" style="height: 50px; width: 50px; text-align: center;"><i class="fas fa-arrow-right"></i></button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {% if coupons %}
+    <div style="background-color: #f1f1f1e0; height: 220px;" class="border-bottom">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-10">
+                    <h3 style="color:#507c5c; margin-left: 465px; padding-top: 20px;">COUPONS OF THE WEEK</h3>
+                </div>
+                <div class="col-md-2" style="text-align: right; padding-top: 20px;">
+                    <a href="{% url 'coupon' %}"><h4>See more<i class="fas fa-chevron-right" style="margin-left: 5px;"></i></h4></a>
+                </div>
+            </div>
+            <div class="row">
+                {% for coupon in coupons %}
+                <div class="col-md-6">
+                    <div class="coupon bg-white rounded d-flex justify-content-between border-coupon" style="margin-top: 10px;">
+                        <div class="kiri p-3" style="margin-right: 15px;">
+                            <div class="icon-container ">
+                                <div class="icon-container_box">
+                                    <img src="https://www.easydoc247.com/services/images/211854.png" width="85" alt="coupon" class="" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tengah py-3 d-flex w-100">
+                            <div style="margin-top: 15px;">
+                                <h3 class="lead" style="font-size: 20px; margin-bottom: 2px;">{{ coupon.title }} {{ coupon.value }} % OFF</h3>
+                                <p class="" style="font-size: 10px; margin-bottom: 0px;">{{ coupon.content }}</p>
+                                <b style="font-size: 12px;">Code : {{ coupon.code }}</b>
+                            </div>
+                        </div>
+                        <div class="kanan" style="text-align: center;">
+                            <div class="info m-3 d-flex align-items-center">
+                                <div class="w-100">
+                                    <div class="block">
+                                        <h6 style="font-size: 11px;">Valid until</h6>
+                                        {% if coupon.coupon_expired %}
+                                        <p style="font-size: 10px; margin-bottom: 5px;">{{ coupon.coupon_expired|date:"M d, Y" }}</p>
+                                        {% else %}
+                                        <p style="font-size: 10px; margin-bottom: 5px;"><i class="fas fa-infinity" style="color: coral;"></i></p>
+                                        {% endif %}
+                                    </div>
+                                    {% if user.is_authenticated %}
+                                    <div class="statusCoupon_{{ coupon.pk }}">
+                                        {% if coupon.pk in used_coupons %}
+                                        <button style="color: gray;" class="btn btn-sm btn-outline-light btn-block" disabled>Used</button>
+                                        {% elif coupon.pk in saved_coupons %}
+                                        <button style="color: gray;" class="btn btn-sm btn-outline-light btn-block" disabled>Saved</button>
+                                        {% else %}
+                                        <a style="color: coral;" id="{{ coupon.pk }}" class="saveCoupon_{{ coupon.pk }} save-coupon btn btn-sm btn-outline-light btn-block">Save</a>
+                                        {% endif %}
+                                    </div>
+                                    {% else %}
+                                    <div class="statusCoupon_{{ coupon.pk }}">
+                                        <a style="color: coral;" id="{{ coupon.pk }}" class="btn btn-sm btn-outline-light btn-block" href="{% url 'login' %}">Save</a>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div style="background-color: #f1f1f1e0; text-align: center; height: 50px;" class="border-bottom" ></div>
+    {% endif %}
+    
+    {% if trending %}
+    <!-- Trending area -->
+    <section class="row trending border-bottom" style="margin-top:20px;">
+        <div class="container" style="margin-bottom: 40px;">
+            <h4 style="color: black;">Trending products</h4>
+            <div class="row">
+                <div class="MultiCarousel" data-items="1,3,5,6" data-slide="1" id="MultiCarousel"  data-interval="1000">
+                    <div class="MultiCarousel-inner">
+                        {% for trend in trending %}
+                        <div class="item">
+                            <a href="{% url 'product-detail' trend.pk %}">
+                                <div class="card">
+                                    <div class="ribbon">
+                                        <span class="ribbon__content">best seller</span>
+                                    </div>
+                                    <div style="display: flex; flex-direction: column; justify-content: center; text-align: center;"> 
+                                        <div class="pad15" style="text-align: center; border-radius: 8%;">
+                                            <img src="{{ trend.image.url }}" alt="{{ trend.product_name }}" width="120" height="120" style="padding-top: 5px; border-radius: 8%;" ></img>
+                                            <span data-toggle="tooltip" data-placement="top" title="{{ trend.product_name }}">
+                                                <p class="text-truncate" style="margin-top: 10%; color: dimgrey;">{{ trend.product_name|truncatechars:15 }}</p>
+                                            </span>
+                                            {% if trend.valid_day and trend.discount > 0 %}
+                                            <div class="row" style="margin-bottom: 16px;">
+                                                <div class="col-md-6" style="text-align: right; padding-right: 5px;">
+                                                    <p class="card-text" style="color: dimgrey;"><del>{{ trend.price|floatformat:2 }} $</del></p>
+                                                </div>
+                                                <div class="col-md-6" style="text-align: left; padding-left: 5px;">
+                                                    <p class="card-text font-weight-bold" style="color: black;">{{ trend.get_discount_price|floatformat:2 }} $</p>
+                                                </div>
+                                            </div>
+                                            {% else %}
+                                            <div class="row" style="margin-bottom: 16px;">
+                                                <div class="col-md-12">
+                                                    <p class="card-text font-weight-bold" style="color: black;">{{ trend.price|floatformat:2 }} $</p>
+                                                </div>
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <button class="btn btn-secondary leftLst" style="height: 50px; width: 50px; text-align: center;"><i class="fas fa-arrow-left"></i></button>
+                    <button class="btn btn-secondary rightLst" style="height: 50px; width: 50px; text-align: center;"><i class="fas fa-arrow-right"></i></button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div style="background-color: #f1f1f1e0; text-align: center; height: 50px;" class="border-bottom" ></div>
+    {% endif %}
+
+    {% if recently %}
+    <!-- Recently viewed product area -->
+    <section class="row trending border-bottom" style="margin-top:20px;">
+        <div class="container" style="margin-bottom: 40px;">
+            <h4 style="color: black;">Recently viewed products</h4>
+            <div class="row">
+                <div class="MultiCarousel" data-items="1,3,5,6" data-slide="1" id="MultiCarousel"  data-interval="1000">
+                    <div class="MultiCarousel-inner">
+                        {% for item in recently %}
+                        <div class="item">
+                            <a href="{% url 'product-detail' item.pk %}">
+                                <div class="card">
+                                    <div style="display: flex; flex-direction: column; justify-content: center; text-align: center;"> 
+                                        <div class="pad15" style="text-align: center; border-radius: 8%;">
+                                            <img src="{{ item.image.url }}" alt="{{ item.product_name }}" width="120" height="120" style="padding-top: 5px; border-radius: 8%;" ></img>
+                                            <span data-toggle="tooltip" data-placement="top" title="{{ item.product_name }}">
+                                                <p class="text-truncate" style="margin-top: 10%; color: dimgrey;">{{ item.product_name|truncatechars:15 }}</p>
+                                            </span>
+                                            {% if item.valid_day and item.discount > 0 %}
+                                            <div class="rib2">
+                                                <span class="rib2__content">{{ item.discount }}% OFF</span>
+                                            </div>
+                                            <div class="row" style="margin-bottom: 16px;">
+                                                <div class="col-md-6" style="text-align: right; padding-right: 5px;">
+                                                    <p class="card-text" style="color: dimgrey;"><del>{{ item.price|floatformat:2 }} $</del></p>
+                                                </div>
+                                                <div class="col-md-6" style="text-align: left; padding-left: 5px;">
+                                                    <p class="card-text font-weight-bold" style="color: black;">{{ item.get_discount_price|floatformat:2 }} $</p>
+                                                </div>
+                                            </div>
+                                            {% else %}
+                                            <div class="row" style="margin-bottom: 16px;">
+                                                <div class="col-md-12">
+                                                    <p class="card-text font-weight-bold" style="color: black;">{{ item.price|floatformat:2 }} $</p>
+                                                </div>
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <button class="btn btn-secondary leftLst" style="height: 50px; width: 50px; text-align: center;"><i class="fas fa-arrow-left"></i></button>
+                    <button class="btn btn-secondary rightLst" style="height: 50px; width: 50px; text-align: center;"><i class="fas fa-arrow-right"></i></button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div style="background-color: #f1f1f1e0; text-align: center; height: 50px;" class="border-bottom" ></div>
+
+    <!-- New product area -->
+    <section class="row new_area border-bottom" style="margin-top:20px;">
+        <div class="container" style="margin-bottom: 40px;">
+            <h4 style="color: black;">Explore something new</h4>
+            <div class="row">
+                <div class="MultiCarousel" data-items="1,3,5,6" data-slide="1" id="MultiCarousel"  data-interval="1000">
+                    <div class="MultiCarousel-inner">
+                        {% for new in new_products %}
+                        <div class="item">
+                            <a href="{% url 'product-detail' new.pk %}">
+                                <div class="card">
+                                    <div class="rib">
+                                        <span class="rib__content">New</span>
+                                    </div>
+                                    <div style="display: flex; flex-direction: column; justify-content: center; text-align: center;">
+                                        <div class="pad15" style="text-align: center; border-radius: 8%;">
+                                            <img src="{{ new.image.url }}" alt="{{ new.name }}" width="120" height="120" style="padding-top: 5px; border-radius: 8%;" ></img>
+                                            <span data-toggle="tooltip" data-placement="top" title="{{ new.product_name }}">
+                                                <p class="text-truncate" style="margin-top: 10%; color: dimgrey;">{{ new.product_name|truncatechars:15 }}</p>
+                                            </span>
+                                            {% if new.valid_day and new.discount > 0 %}
+                                            <div class="row" style="margin-bottom: 16px;">
+                                                <div class="col-md-6" style="text-align: right; padding-right: 5px;">
+                                                    <p class="card-text" style="color: dimgrey;"><del>{{ new.price|floatformat:2 }} $</del></p>
+                                                </div>
+                                                <div class="col-md-6" style="text-align: left; padding-left: 5px;">
+                                                    <p class="card-text" style="color: black;">{{ new.get_discount_price|floatformat:2 }} $</p>
+                                                </div>
+                                            </div>
+                                            {% else %}
+                                            <div class="row" style="margin-bottom: 16px;">
+                                                <div class="col-md-12">
+                                                    <p class="card-text font-weight-bold" style="color: black;">{{ new.price|floatformat:2 }} $</p>
+                                                </div>
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <button class="btn btn-secondary leftLst" style="height: 50px; width: 50px; text-align: center;"><i class="fas fa-arrow-left"></i></button>
+                    <button class="btn btn-secondary rightLst" style="height: 50px; width: 50px; text-align: center;"><i class="fas fa-arrow-right"></i></button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div style="background-color: #f1f1f1e0; text-align: center; height: 50px;" class="border-bottom" ></div>
+    {% endif %}
+
+    <!-- All product area -->
+    <section class="row recommend_area border-bottom" style="margin-top:20px;">
+        <div class="container">
+            <h4 style="color: black;">Today recommendation</h4>
+            <div id="pro" class="row products-list" style="margin-top:20px;">
+                {% for product in first_page %}
+                <div class="col-md-3" style="margin-bottom: 20px; border-radius: 8%;">
+                    <div class="card" style="box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 50px; position:relative; z-index: 1;">
+                        {% if product.valid_day and product.discount > 0 %}
+                            <span class="ribbo">
+                                <span><b style="color:white;"><div style="color: yellow;">{{ product.discount }}%</div> OFF</b></span>
+                            </span>
+                        {% endif %}
+                        <div class="my-4 text-center border-0">
+                            <div>
+                                <a href="{% url 'product-detail' product.pk %}">
+                                    <img src="{{ product.image.url }}" style="align-content: center; border-radius: 8%;" width="180" height="180" alt="{{ product.product_name }}" target="_blank">
+                                </a>
+                            </div>
+                        </div>
+                        <div class="card-body text-center">
+                            <span data-toggle="tooltip" data-placement="top" title="{{ product.product_name }}"></span>
+                                <p class="card-text mb-1 text-truncate">{{ product.product_name }}</p>
+                            </span>
+                            {% if product.valid_day and product.discount > 0 %}
+                            <div class="row" style="margin-bottom: 16px;">
+                                <div class="col-md-6" style="text-align: right; padding-right: 5px;">
+                                    <p class="card-text" style="color: dimgrey;"><del>{{ product.price|floatformat:2 }} $</del></p>
+                                </div>
+                                <div class="col-md-6" style="text-align: left; padding-left: 5px;">
+                                    <p class="card-text font-weight-bold">{{ product.get_discount_price|floatformat:2 }} $</p>
+                                </div>
+                            </div>
+                            {% else %}
+                            <p class="card-text font-weight-bold">{{ product.price|floatformat:2 }} $</p>
+                            {% endif %}
+                            <div class="favorite_area">
+                                <div class="fav">
+                                    <div class="row">
+                                        <div class="col-md-8" style="padding-left: 45px;">
+                                            <a href="{% url 'product-detail' product.pk %}" class="btn btn-primary">View details</a>
+                                        </div>
+                                        {% if user.is_authenticated %}
+                                            {% if product.id in favorite_product_ids %}
+                                            <div class="col-md-4" id="favorArea_{{ product.id }}">
+                                                <a class="wishlist" id="wishlist_{{ product.id }}">
+                                                    <button class="btn" style="padding-left: 0px; color: #bb8672;"><i class="fas fa-heart ml-2"></i></button>
+                                                </a>
+                                            </div>
+                                            {% else %}
+                                            <div class="col-md-4" id="favorArea_{{ product.id }}">
+                                                <a class="wishlist" id="wishlist_{{ product.id }}">
+                                                    <button class="btn" style="padding-left: 0px;"><i class="far fa-heart ml-2"></i></button>
+                                                </a>
+                                            </div>
+                                            {% endif %}
+                                        {% else %}
+                                        <div class="col-md-4">
+                                            <a href="{% url 'login' %}">
+                                                <button class="btn" style="padding-left: 0px;"><i class="far fa-heart ml-2"></i></button>
+                                            </a>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <div id="pagination" class="pagination" style="margin-bottom: 20px; margin-left: 30%; margin-top: 20px;">
+                {% for i in page_range %}
+                <a class="pag" id="{{i}}"style="margin-left: 5px; " href="{{i}}">{{i}}</a>
+                {% endfor %}
+            </div>
+        </div>       
+        
+        <div style="display: flex;align-items: center;justify-content: center;">
+            <div class="popup" id="popup">
+              <div class="popup-inner">
+                <img src="{% static 'images/winter-popup.jpg' %}" alt="pop-up" style="width: 100%; height: 94%;"> 
+                <a class="closepopup"><i class="fas fa-times" style="color: cornsilk;"></i></a>
+              </div>
+            </div>
+        </div>
+        <div id="cssLoader17" class="main-wrap main-wrap--white" style="z-index: 5; display: none;">
+            <div class="loader-background">
+                <div class="cssLoader17"></div>
+            </div>
+        </div>
+        <script>
+        //    $(window).load(function() {
+        //         document.getElementById("cssLoader17").style.display = "flex" 
+        //         setTimeout(function() { 
+        //             document.getElementById("cssLoader17").style.display = "none" 
+        //         }, 1000);
+        //     }
+        // )
+        
+        </script>
+
+        <script>
+            $('.closepopup').click(function() {
+                $('.popup').hide();
+            });
+        </script>
+
+        <script>
+            $('.pag').click(function(event){
+                // preventing default actions
+                event.preventDefault();
+                var page_no = $(this).attr('href');
+                var previous_no = page_no
+                var next_no = page_no+1
+                // ajax call
+                    $.ajax({
+                            type: "POST",
+                            // define url name
+                            url: "{% url 'home' %}", 
+                            data : {    
+                            page_no : page_no, 
+                            action : 'pagi',
+                            csrfmiddlewaretoken: '{{ csrf_token }}',
+                        },
+                        // handle a successful response
+                        success: function (data) {
+                            document.getElementById("cssLoader17").style.display = "flex" 
+                            setTimeout(function () {
+                                document.getElementById("cssLoader17").style.display = "none";
+                                $('#pro').html(data.list)
+                            }, 1000);
+                        }.bind(this),
+                        error: function(xhr, status, error) {
+                            var err = JSON.parse(xhr.responseText);
+                            alert(err.Message);
+                        }
+                    }); 
+            });    
+        </script>
+        <script>
+            $(function() {
+                $(document).on('click', '.wishlist', function (e) {
+                // preventing default actions
+                event.preventDefault();
+                var $id = $(this).attr('id');
+                var target = $id.substring($id.indexOf('_') + 1);
+                // ajax call
+                    $.ajax({
+                            type: "POST",
+                            // define url name
+                            url: "{% url 'home' %}", 
+                            data : {    
+                            id : target, 
+                            action : 'addWishlist',
+                            csrfmiddlewaretoken: '{{ csrf_token }}',
+                        },
+                        // on success
+                        success: function (response) {
+                            $("#wishlist_"+target).remove();
+                            if (response.liked == true){
+                                $("#favorArea_"+target).append(
+                                    '<a class="wishlist" id="wishlist_'+ target +'">'+
+                                        '<button class="btn" style="padding-left: 0px; color: #bb8672;"><i class="fas fa-heart ml-2"></i></button>'+
+                                    '</a>'
+                                )
+                            }
+                            else {
+                                $("#favorArea_"+target).append(
+                                    '<a class="wishlist" id="wishlist_'+ target +'">'+
+                                        '<button class="btn" style="padding-left: 0px;"><i class="far fa-heart ml-2"></i></button>'+
+                                    '</a>'
+                                )
+                            }
+                            toastr.options = {
+                                "debug": false,
+                                "newestOnTop": true,
+                                "progressBar": true,
+                                "positionClass": "toast-top-right",
+                                "preventDuplicates": false,
+                                "showDuration": "500",
+                                "hideDuration": "1000",
+                                "timeOut": "5000",
+                                "extendedTimeOut": "1000",
+                                "showEasing": "swing",
+                                "hideEasing": "linear",
+                                "showMethod": "fadeIn",
+                                "hideMethod": "fadeOut"
+                            }
+                            if (response.status == "success") {
+                                toastr["success"](response.message);
+                            }
+                            else if (response.status == "warning") {
+                                toastr["warning"](response.message);
+                            }
+                            else if (response.status == "error") {
+                                toastr["error"](response.message);
+                            }
+                        },
+                        // on error
+                        error: function (response) {
+                            // alert the error if any error occured
+                            alert(response.status)
+                        }
+                    }); 
+                return false;
+            });   
+        }); 
+        </script>
+
+        <script>
+            // catch the a link event
+            $('.save-coupon').click(function (event) {
+                // preventing default actions
+                event.preventDefault();
+                // create an AJAX call
+                var pk = $(this).attr('id');
+                $.ajax({
+                    type: "POST",
+                    // define url name
+                    url: "{% url 'home' %}", 
+                    data : {    
+                        id : pk,
+                        action : 'saveCoupon',
+                        csrfmiddlewaretoken: '{{ csrf_token }}',
+                    },
+                    // on success
+                    success: function (response) {
+                        $(".saveCoupon_"+pk).remove();
+                        $(".statusCoupon_"+pk).append(
+                            '<button style="color: gray;" class="btn btn-sm btn-outline-light btn-block" disabled>Saved</button>'
+                        )
+                        toastr.options = {
+                            "debug": false,
+                            "newestOnTop": true,
+                            "progressBar": true,
+                            "positionClass": "toast-top-right",
+                            "preventDuplicates": false,
+                            "showDuration": "500",
+                            "hideDuration": "1000",
+                            "timeOut": "5000",
+                            "extendedTimeOut": "1000",
+                            "showEasing": "swing",
+                            "hideEasing": "linear",
+                            "showMethod": "fadeIn",
+                            "hideMethod": "fadeOut"
+                        }
+                        if (response.status == "success") {
+                            toastr["success"](response.message);
+                        }
+                        else if (response.status == "warning") {
+                            toastr["warning"](response.message);
+                        }
+                        else if (response.status == "error") {
+                            toastr["error"](response.message);
+                        }
+                    },
+                    // on error
+                    error: function (response) {
+                        // alert the error if any error occured
+                        alert(response.status)
+                    }
+                });
+                return false;
+            })
+        </script>
+    </section>
+
+    <div style="background-color: #f1f1f1e0; text-align: center; height: 50px;" class="border-bottom" ></div>
+
+    <!-- Information area -->
+    <section class="row info_area border-bottom" style="margin-top:20px;">
+        <div class="container">
+            <h4 style="color: black;">Stay Healthy with Medcare: Your Favourite Online Pharmacy and Healthcare Platform</h4>
+            <br>
+            <b>We Bring Care to Health.</b>
+            <p>Medcare is Vietnam's leading digital healthcare platform. From doctor consultations on chat to online pharmacy and lab tests at home: we have it all covered for you. Having delivered over 25 million orders in 1000+ cities till date, we are on a mission to bring "care" to "health" to give you a flawless healthcare experience.</p>
+            <b>Medcare: Your Favourite Online Pharmacy!</b>
+            <p>Medcare is Vietnam's leading online chemist with over 2 lakh medicines available at the best prices. We are your one-stop destination for other healthcare products as well, such as over the counter pharmaceuticals, healthcare devices and homeopathy and ayurveda medicines.</p>
+            <p>With Medcare, you can buy medicines online and get them delivered at your doorstep anywhere in Vietnam! But, is ordering medicines online a difficult process? Not at all! Simply search for the products you want to buy, add to cart and checkout. Now all you need to do is sit back as we get your order delivered to you.</p>
+            <p>In case you need assistance, just give us a call and we will help you complete your order.</p>
+            <p>Don't want to go through the hassle of adding each medicine separately? You can simply upload your prescription and we will place your order for you. And there is more! At Tata 1mg, you can buy health products and medicines online at best discounts.</p>
+            <p>Now, isn't that easy? Why go all the way to the medicine store and wait in line, when you have Medcare Pharmacy at your service.</p>
+            <b>The Feathers in Our Cap</b>
+            <p>At Medcare, our goal is to make healthcare understandable, accessible and affordable in Vietnam. We set out on our journey in 2021, and have come a long way since then. Along the way, we have been conferred with prestigious titles like Vietnam Pharmacy Award for 'Business Excellence through Learning and Development', Best Online Pharmacy in Vietnam Award and Top 50 venture in The Smart CEO-Startup50 Vietnam. We have been selected as the only company from across the globe for SD#3 "Health & Well Being for all" by Unreasonable group, US State Department. In 2021 alone we received three awards including the BMW Simply Unstoppable Award.</p>
+            <b>The Services We Offer</b>
+            <p>Medcare is Vietnam's leading digital healthcare platform, where you can buy medicines online with discount. Buy medicine online in Hanoi, Ho chi minh City, Danang, Hue, Hai Phong, Can Tho, Khanh Hoa, Gia Lai, Dong Nai, Lao Cai, Hai Duong and around a 1000 more cities. Besides delivering your online medicine order at your doorstep, we provide accurate, authoritative & trustworthy information on medicines and help people use their medicines effectively and safely.</p>
+            <p>We also facilitate lab tests at home. You can avail over 2,000 tests and get tested by 120+ top and verified labs at the best prices. Need to consult a doctor? On our platform, you can talk to over 20 kinds of specialists in just a few clicks.</p>
+            <p>Customer centricity is the core of our values. Our team of highly trained and experienced doctors, phlebotomists and pharmacists looks into each order to give you a fulfilling experience.</p>
+            <p>We’ve made healthcare accessible to millions by giving them quality care at affordable prices. Customer centricity is the core of our values. Our team of highly trained and experienced doctors, phlebotomists and pharmacists looks into each order to give you a fulfilling experience.</p>
+            <p>Visit our online medical store now, and avail online medicine purchase at a discount.</p>
+            <p>Stay Healthy!</p>
+            <br>
+        </div>
+    </section>
+
+    <div style="background-color: #f1f1f1e0; text-align: center; height: 50px;" class="border-bottom" ></div>
+</main>
+{% endblock %}
+
+{% block jscode %}
+<script src="{% static 'js/carousel.js' %}" defer></script>
+<script src="{% static 'js/alert.js' %}" defer></script>
+{% endblock %}

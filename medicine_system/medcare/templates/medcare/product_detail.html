@@ -1,0 +1,786 @@
+{% extends "base_generic.html" %}
+{% load i18n %}
+{% load static %}
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-8" style="margin-bottom: 20px;">
+            <div style="margin-top: 15px; margin-bottom: 30px;">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'product-list' %}">Products</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">{{ product.product_name }}</li>
+                    </ol>
+                </nav>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <img id="zoom_01" data-zoom-image="{{ product.image.url }}" src="{{ product.image.url }}" class="card-img-top" width="400" height="350" alt="{{ product.name }}">
+                    <script>
+                        $('#zoom_01').ezPlus({
+                            constrainType: 'height', constrainSize: 274, zoomType: 'lens',
+                            containLensZoom: true, cursor: 'pointer'
+                        });
+                    </script>
+                </div>
+                <div class="col-md-6" style="margin-top:20px">
+                    <h3 class="font-weight-bold" style="color: black;">{{ product.product_name }}</h3>
+                    {% trans 'Category : ' %}<h6 class="card-subtitle mb-2 badge badge-secondary" style="margin-right: 5px;">{{ product.category.navbar.name }}</h6><h6 class="card-subtitle mb-2 badge badge-primary">{{ product.category }}</h6>
+                    <p>{% trans 'Stock : ' %}{{ product.quantity }}</p>
+                    <div class="align-items-center">
+                        {% if product.valid_day and product.discount > 0 %}
+                        <div class="row">
+                            <div class="col-md-4" style="padding-right: 0px; margin-right: 5px;">
+                                <h3 class="card-text font-weight-bold" style="color: coral;">Price : {{ product.get_discount_price|floatformat:2 }}$</h3>
+                            </div>
+                            <div class="col-md-2" style="padding-left: 0px; padding-top: 6px; padding-right: 0px; margin-right: -10px;">
+                                <h3 class="card-text mr-4" style="color: dimgrey; font-size: 12px;"><del>{{ product.price|floatformat:2 }}$</del></h3>
+                            </div>
+                            <div class="col-md-2" style="padding-left:0px;">
+                                <h6 class="card-subtitle mb-2 badge badge-success">-{{ product.discount }}%</h6>
+                            </div>
+                        </div>
+                        {% else %}
+                        <h3 class="card-text font-weight-bold mr-4" style="color: coral;">Price : {{ product.price|floatformat:2 }}$</h3>
+                        {% endif %}
+                    </div>
+                    <div id="popover-content" style="margin-top: 20px;">
+                        {% if user.is_authenticated %}
+                        <form method="POST" enctype="multipart/form-data" id="cart"
+                            action="{% url 'cart_add' product.pk %}">
+                            {% csrf_token %}
+                            <div style="width:8ch; height: 8ch;">
+                                {{ cart_form.as_p }}
+                            </div>
+                            <div style="padding-left: -10px; padding-top: 25px;">
+                                <button type="submit" class="btn btn-info"><i class="fas fa-shopping-cart mr-2"></i>{% trans 'Add to cart' %}</button>
+                            </div>
+                        </form>
+                        <script>
+                            // catch the form's submit event
+                            $('#cart').submit(function (event) {
+                                // create an AJAX call
+                                event.preventDefault();
+                                $.ajax({
+                                    data: $('form#cart').serialize(), // get the form data
+                                    type: $(this).attr('method'), // GET or POST
+                                    url: $(this).attr('action'), // the file to call
+                                    // on success
+                                    success: function (response) {
+                                        $(".cartNum").remove();
+                                        $(".cartCount").append(
+                                            '<span class="badge badge-warning badge-pill cartNum">'+ response.cart_count +'</span>'
+                                        )
+                                        toastr.options = {
+                                            "debug": false,
+                                            "newestOnTop": true,
+                                            "progressBar": true,
+                                            "positionClass": "toast-top-right",
+                                            "preventDuplicates": false,
+                                            "showDuration": "500",
+                                            "hideDuration": "1000",
+                                            "timeOut": "5000",
+                                            "extendedTimeOut": "1000",
+                                            "showEasing": "swing",
+                                            "hideEasing": "linear",
+                                            "showMethod": "fadeIn",
+                                            "hideMethod": "fadeOut"
+                                        }
+                                        if (response.status == "success") {
+                                            toastr["success"](response.message);
+                                        }
+                                        else if (response.status == "warning") {
+                                            toastr["warning"](response.message);
+                                        }
+                                        else if (response.status == "error") {
+                                            toastr["error"](response.message);
+                                        }
+                                    },
+                                    // on error
+                                    error: function (response) {
+                                        // alert the error if any error occured
+                                        alert(response.status)
+                                    }
+                                });
+                                return false;
+                            })
+                        </script>
+                        {% else %}
+                        <div style="padding-left: -10px; padding-top: 25px;">
+                            <a href="{% url 'login' %}">
+                                <button class="btn btn-info"><i class="fas fa-shopping-cart mr-2"></i>{% trans 'Add to cart' %}</button>
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <br>
+            <div style="margin-top: 50px; text-align: justify;">
+                {% autoescape off %}
+                {{ product.description }}
+                {% endautoescape %}
+            </div>
+
+            <h4 style="margin-top:40px;">Tags: 
+                {% for tag in tags %}
+                <span class="badge badge-secondary" style="margin-left: 3px;">{{ tag.name }}</span>
+                {% endfor %}
+            </h4>
+            </section>
+        </div>
+
+
+        <div class="col-md-4">
+            <div class="container"
+                style="width: 20rem; box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px; margin-top: 15px;">
+                <div class="card-body">
+                    <div class="row" style="margin-bottom: 10px;">
+                        <div class="col-7">
+                            <h3 class="card-title" style="color: rgb(172, 175, 175);">Stressful life?</h3>
+                            <h4 class="card-text" style="color: dimgrey;font-size: 90%;">Stay on top of your Health with our</h4>
+                        </div>
+                        <div class="col-5">
+                            <img src="{% static 'images/basket.png' %}" width="70" height="70" style="margin-right: 10px;" alt="Basket">
+                        </div>
+                    </div>
+                    <h3 class="font-weight-bold" style="margin-bottom: 20px;">Preventive Health Packages</h3>
+                    <a href="#" class="btn btn-primary text-right" style="font-size: 75%;">BOOK A LAB TEST ONLINE</a>
+                </div>
+            </div>
+
+            <div class="container" style="width: 20rem; margin-top: 50px; box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;">
+                <div class="card-body">
+                    <h4 class="card-title" style="color: rgb(172, 175, 175);">Content Details</h4>
+                    <div class="row" style="margin-top: 25px;">
+                        <div class="col-4">
+                            <img src="{% static 'images/doctor1.jpg' %}" width="80" height="80" style="margin-right: 10px; border-radius: 50%;" alt="Doctor1">
+                        </div>
+                        <div class="col-8">
+                            <h5 class="card-text" style="color: darkslategray;">Written by</h5>
+                            <h5 class="card-text" style="color: coral; font-size: 90%;line-height: 10px;">Dr. Swati Mishra</h5>
+                            <h5 class="card-text" style="color: black;">BDS</h5>
+                        </div>
+                    </div>
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <div class="row" style="margin-top: 10px; margin-bottom: 5px;">
+                            <div class="col-4">
+                                <img src="{% static 'images/doctor2.jpg' %}" width="80" height="80" style="margin-right: 10px; border-radius: 50%;" alt="Doctor2">
+                            </div>
+                            <div class="col-8">
+                                <h5 class="card-text" style="color: darkslategray;">Reviewed By</h5>
+                                <h5 class="card-text" style="color: coral; font-size: 90%; line-height: 10px;">Dr.Ashish Ranjan</h5>
+                                <h5 class="card-text" style="color: black;">MD (Pharmacology), MBBS</h5>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <p style="font-size: 80%; color:gray;">Last updated:</p>
+                        <p style="font-size: 80%; color:gray; line-height: 0px;">{{ product.created_at }}</p>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="row" style="margin-bottom: 5px;">
+                            <div class="col-3">
+                                <img src="{% static 'images/authenticity.png' %}" width="70" height="70" style="margin-right: 10px; border-radius: 50%;" alt="Authenticity">
+                            </div>
+                            <div class="col-1"></div>
+                            <div class="col-7">
+                                <p style="font-size: 80%; color:gray; margin-bottom: 0%; margin-top: 7px;">Want to know more?</p>
+                                <a class="font-weight-bold" style="color: coral;font-size: 80%;">Read Our Editorial Policy</a>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+                <div class="card-body">
+                    <p style="font-size: 70%; color:gray;line-height: 0px;">Have issue with the content?<a
+                            class="font-weight-bold" style="color: coral;"> Report Problem</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rating review area -->
+    <div class="row">
+        <div class="col-md-8">
+            <div class="row" style="margin-top: 50px;">
+                <div class="col-md-6">
+                    <h1 class="card-title" style="color:rgb(74, 80, 80)">Ratings & Reviews</h1>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="row" style="padding-left: 10px;">
+                                <div class="aveArea">
+                                    <h1 class="d-inline-block averageLine" style="font-size: 60px; color:green;">{{ average }}</h1>
+                                </div>
+                                <img src="{% static 'images/star.png' %}" width="45" height="45" style="margin-right: 10px; margin-left: 10px; margin-top: 25px;" alt="Basket">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="summarCount">
+                        <h3 class="card-title summaryCount" style="color:rgb(74, 80, 80)">{{ count2 }} Ratings & {{ count2 }} Reviews</h3>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-2">
+                            <p>5 <i class="fas fa-star" style="color:lightslategray"></i></p>
+                        </div>
+                        <div class="col-md-7">
+                            <div class="progress proFive" style="margin-top:5px;">
+                                <div class="progress-bar bg-success progreFive" role="progressbar" style="width: {{ five_percentage }}%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 fiNum">
+                            <p class="fiveNum">{{ five_percentage }} %</p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-2">
+                            <p>4 <i class="fas fa-star" style="color:lightslategray"></i></p>
+                        </div>
+                        <div class="col-md-7">
+                            <div class="progress proFour" style="margin-top:5px;">
+                                <div class="progress-bar bg-success progreFour" role="progressbar" style="width: {{ four_percentage }}%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 foNum">
+                            <p class="fourNum">{{ four_percentage }} %</p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-2">
+                            <p>3 <i class="fas fa-star" style="color:lightslategray"></i></p>
+                        </div>
+                        <div class="col-md-7">
+                            <div class="progress proThree" style="margin-top:5px;">
+                                <div class="progress-bar bg-success progreThree" role="progressbar" style="width: {{ three_percentage }}%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 theNum">
+                            <p class="threeNum">{{ three_percentage }} %</p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-2">
+                            <p>2 <i class="fas fa-star proTwo" style="color:lightslategray"></i></p>
+                        </div>
+                        <div class="col-md-7">
+                            <div class="progress proTwo" style="margin-top:5px;">
+                                <div class="progress-bar bg-warning progreTwo" role="progressbar" style="width: {{ two_percentage }}%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 twNum">
+                            <p class="twoNum">{{ two_percentage }} %</p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-2">
+                            <p>1 <i class="fas fa-star" style="color:lightslategray"></i></p>
+                        </div>
+                        <div class="col-md-7">
+                            <div class="progress proOne" style="margin-top:5px;">
+                                <div class="progress-bar bg-danger progreOne" role="progressbar" style="width: {{ one_percentage }}%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 onNum">
+                            <p class="oneNum">{{ one_percentage }} %</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <hr>
+            <div class="review-row">
+                {% if review.exists %}
+                {% for rv in first_page %}
+                <div class="row" id="rvnum_{{ rv.id }}"> 
+                    <div class="col-md-8">
+                        <h3 class="card-title" style="color:rgb(74, 80, 80)">{{ rv.user.first_name }} {{ rv.user.last_name }} </h3>
+                        <div class="row">
+                            <div class="col-md-1">
+                                <a class="badge badge-success"><span style="color: white; font-size: 17px;">{{ rv.rate }} <i class="fas fa-star" style="color:white"></i></span></a>
+                            </div>
+                            <div class="col-md-11" style="padding-left: 25px;">
+                                <h4 class="card-title" style="color:rgb(74, 80, 80)">Verified Buyer</h4>
+                            </div>
+                        </div>
+                        <p style="margin-top: 15px;"><b>{{ rv.title }}</b></p>
+                        <p>{{ rv.content }}</p>
+                        <div class="row">
+                            {% if user.is_authenticated %}
+                                {% if rv.id in favorite_review_ids %}
+                                <div class="col-md-5" id="favorArea_{{ rv.id }}">
+                                    <a class="helpful" href="" id="helpful_{{ rv.id }}">
+                                        <h3 class="card-title" style="color: #bb8672;; font-size: 18px; margin-top: 8px;">
+                                            <i class="far fa-thumbs-up" style="color: #bb8672;"></i> HELPFUL</h3>
+                                    </a>
+                                </div>
+                                {% else %}
+                                <div class="col-md-5" id="favorArea_{{ rv.id }}">
+                                    <a class="helpful" href="" id="helpful_{{ rv.id }}">
+                                        <h3 class="card-title" style="color: rgb(172, 175, 175); font-size: 18px; margin-top: 8px;">
+                                            <i class="far fa-thumbs-up"></i> HELPFUL</h3>
+                                    </a>
+                                </div>
+                                {% endif %}
+                            {% else %}
+                            <div class="col-md-5">
+                                <a href="{% url 'login' %}">
+                                    <h3 class="card-title" style="color: rgb(172, 175, 175); font-size: 18px; margin-top: 8px;">
+                                        <i class="far fa-thumbs-up"></i> HELPFUL</h3>
+                                </a>
+                            </div>
+                            {% endif %}
+                            <div class="col-md-5">
+                                <a href="" data-toggle="modal" data-target="#reportModal">
+                                <h3 class="card-title" style="color: rgb(172, 175, 175); font-size: 18px; margin-top: 8px;">
+                                    <i class="fas fa-info-circle"></i> REPORT</h3></a>
+                                    <!-- Report Modal -->
+                                    <div class="modal fade" id="reportModal" tabindex="-1" role="dialog" aria-labelledby="reportModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h3 class="modal-title" id="exampleModalLabel">{% trans 'Report review' %}</h3>
+                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    {% trans 'If you find this review inappropriate, please notify us by filling this form and clicking the summit button below and we will look into the issue' %}
+                                                    <form>
+                                                        <div class="mb-3">
+                                                          <label for="title-name" class="col-form-label">Title:</label>
+                                                          <input type="text" class="form-control" id="title-name">
+                                                        </div>
+                                                        <div class="mb-3">
+                                                          <label for="content-text" class="col-form-label">Content:</label>
+                                                          <textarea class="form-control" id="content-text"></textarea>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary close_modal" data-dismiss="modal">{% trans 'Cancel' %}</button>
+                                                    <a class="reportReview" id="row_{{ rv.id }}" href="">
+                                                        <button type="submit" name="report" class="btn btn-primary">{% trans 'Summit' %}</button>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4" style="text-align: right;">
+                        {{ rv.created_at }}
+                    </div>
+                </div>
+                <hr id="num_{{ rv.id }}">
+                {% endfor %}
+                {% else %}
+                <p class="fs-md mb-2 note">
+                    There are no reviews for this product yet.
+                </p>
+                {% endif %}
+            </div>
+            <div>
+            {% if count1 > 0 %}
+            <a class="loadMore row" href="{% url 'product-detail' id %}">
+                <div class="col-md-9"></div>
+                <div class="col-md-3">
+                    <div class="row" style="padding-left: 20px;">
+                        <h3 class="card-title" style="color:coral; font-size: 18px; margin-top: 10px; text-align: right;">Show More </h3>
+                        <div class="countArea">
+                            <h3 class="count card-title" style="color:coral; font-size: 18px; margin-top: 10px; padding-left: 5px;" id="{{ count1 }}">({{count1}}) </h3>
+                        </div>
+                        <h3 class="card-title" style="color:coral; font-size: 18px; margin-top: 10px; padding-left: 5px;"><i class="fas fa-chevron-down"></i></h3>
+                    </div>
+                </div>
+            </a>
+            {% endif %}
+            </div>
+            <div class="load-area">
+                <input class="load" type="hidden" id="2">
+                <input class="range" type="hidden" id="{{ page_range }}">
+            </div>
+            <script>
+                $('.loadMore').click(function(event){
+                    // preventing default actions
+                    event.preventDefault();
+                    var page_num = $('.load').attr('id');
+                    var page_range = $('.range').attr('id');
+                    var count = $('.count').attr('id');
+                    // ajax call
+                        $.ajax({
+                                type: "POST",
+                                // define url name
+                                url: $(this).attr('href'),
+                                data : {    
+                                page_no : page_num, 
+                                count : count,
+                                csrfmiddlewaretoken: '{{ csrf_token }}',
+                            },
+                            // handle a successful response
+                            success: function (data) {
+                                document.getElementById("cssLoader17").style.display = "flex" 
+                                    setTimeout(function () {
+                                    document.getElementById("cssLoader17").style.display = "none";
+                                    $('.load').remove()
+                                    $('.load-area').append(
+                                        '<input class="load" type="hidden" id="'+data.list[1].page_no+'">'
+                                    )
+                                    $('.count').remove()
+                                    $('.countArea').append(
+                                        '<h3 class="count card-title" style="color:coral; font-size: 18px; margin-top: 10px; padding-left: 5px;" id="'+ data.list[1].count+'">('+data.list[1].count+') </h3>'
+                                    )
+                                    if (page_num == page_range - 1){
+                                        $('.loadMore').html('')
+                                    }
+                                    $('.review-row').last().append(data.list[0]);
+                                }, 1000);
+                            },
+                            error: function () {
+                                alert('Error Occured');
+                            }
+                        }); 
+                });    
+                </script>
+                <script>
+                    $(function() {
+                        $(document).on('click', '.helpful', function (e) {
+                        // preventing default actions
+                        event.preventDefault();
+                        var $id = $(this).attr('id');
+                        var target = $id.substring($id.indexOf('_') + 1);
+                        // ajax call
+                            $.ajax({
+                                    type: "POST",
+                                    // define url name
+                                    url: "{% url 'home' %}", 
+                                    data : {    
+                                    id : target, 
+                                    action : 'addHelpful',
+                                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                                },
+                                // on success
+                                success: function (response) {
+                                    $("#helpful_"+target).remove();
+                                    if (response.liked == true){
+                                        $("#favorArea_"+target).append(
+                                            '<a class="helpful" href="" id="helpful_'+ target +'">'+
+                                                '<h3 class="card-title" style="color: #bb8672;; font-size: 18px; margin-top: 8px;">'+
+                                                    '<i class="far fa-thumbs-up" style="color: #bb8672;"></i> HELPFUL</h3>'+
+                                            '</a>'
+                                        )
+                                    }
+                                    else {
+                                        $("#favorArea_"+target).append(
+                                            '<a class="helpful" href="" id="helpful_'+ target +'">'+
+                                                '<h3 class="card-title" style="color: rgb(172, 175, 175); font-size: 18px; margin-top: 8px;">'+
+                                                    '<i class="far fa-thumbs-up"></i> HELPFUL</h3>'+
+                                            '</a>'
+                                        )
+                                    }
+                                },
+                                // on error
+                                error: function (response) {
+                                    // alert the error if any error occured
+                                    alert(response.status)
+                                }
+                            }); 
+                        return false;
+                    });   
+                }); 
+                </script>
+                <script>
+                    $(function() {
+                        $(document).on('click', '.reportReview', function (e) {
+                        // preventing default actions
+                        event.preventDefault();
+                        var $id = $(this).attr('id');
+                        var target = $id.substring($id.indexOf('_') + 1);
+                        var title = $("#title-name").val();
+                        var content = $("#content-text").val();
+                        // ajax call
+                            $.ajax({
+                                    type: "POST",
+                                    // define url name
+                                    url: "/medcare/report/add/"+target+"/", 
+                                    data : {    
+                                    review_id : target, 
+                                    action : 'report',
+                                    title : title,
+                                    content : content,
+                                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                                },
+                                // on success
+                                success: function (response) {
+                                    $('.close_modal').click();
+                                    toastr.options = {
+                                        "debug": false,
+                                        "newestOnTop": true,
+                                        "progressBar": true,
+                                        "positionClass": "toast-top-right",
+                                        "preventDuplicates": false,
+                                        "showDuration": "500",
+                                        "hideDuration": "1000",
+                                        "timeOut": "5000",
+                                        "extendedTimeOut": "1000",
+                                        "showEasing": "swing",
+                                        "hideEasing": "linear",
+                                        "showMethod": "fadeIn",
+                                        "hideMethod": "fadeOut"
+                                    }
+                                    if (response.status == "success") {
+                                        toastr["success"](response.message);
+                                    }
+                                    else if (response.status == "warning") {
+                                        toastr["warning"](response.message);
+                                    }
+                                    else if (response.status == "error") {
+                                        toastr["error"](response.message);
+                                    }
+                                },
+                                // on error
+                                error: function (response) {
+                                    // alert the error if any error occured
+                                    alert(response.status)
+                                }
+                            }); 
+                        return false;
+                    });   
+                }); 
+            </script>
+        </div>
+        <div class="col-md-4" style="margin-top: 110px;">
+            <!-- Review Form -->
+            {% if user.is_authenticated %}
+            {% if paid %}
+            <div class="container" style="box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;"">
+                <div class="card-body">
+                    <h3 class="pb-2">Write a review<i class="far fa-comment-dots" style="padding-left: 10px;"></i></h3>
+                    <form method="POST" id="review" class="row padding-top" action="{% url 'review_add' product.pk %}" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="h6 pb-2 col-sm-12">
+                            {{ review_form.as_p }}
+                        </div>
+                        {% if reviewed %}
+                        <div class="mb-3 mb-4 col-sm-12">
+                            <button type="submit" class="btn btn-primary btn-shadow d-block w-100">Edit a Review</button>
+                        </div>
+                        {% else %}
+                        <div class="mb-3 mb-4 col-sm-12">
+                            <button type="submit" class="btn btn-primary btn-shadow d-block w-100">Submit a Review</button>
+                        </div>
+                        {% endif %}
+                    </form>
+                    <script>
+                        // catch the form's submit event
+                        $('#review').submit(function (event) {
+                            // create an AJAX call
+                            event.preventDefault();
+                            $.ajax({
+                                data: $('form#review').serialize(), // get the form data
+                                type: $(this).attr('method'), // GET or POST
+                                url: $(this).attr('action'), // the file to call
+                                // on success
+                                success: function (response) {
+                                    document.getElementById("cssLoader17").style.display = "flex" 
+                                    setTimeout(function () {
+                                        document.getElementById("cssLoader17").style.display = "none";
+                                        if (response.edit == true){
+                                            $('#rvnum_'+response.id).html('');
+                                            $('#num_'+response.id).remove();
+                                        }
+                                        $('.averageLine').remove();
+                                        $('.aveArea').append(
+                                            '<h1 class="d-inline-block averageLine" style="font-size: 60px; color:green;">'+ response.average +'</h1>'
+                                        )
+                                        $('.summaryCount').remove();
+                                        $('.summarCount').append(
+                                            '<h3 class="card-title summaryCount" style="color:rgb(74, 80, 80)">'+ response.count2 +' Ratings & '+ response.count2 +' Reviews</h3>'
+                                        )
+                                        $('.progreFive').remove();
+                                        $('.proFive').append(
+                                            '<div class="progress-bar bg-success progreFive" role="progressbar" style="width: '+response.five_percentage+'%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>'
+                                        )
+                                        $('.fiveNum').remove();
+                                        $('.fiNum').append(
+                                            '<p class="fiveNum">' + response.five_percentage + '%</p>'
+                                        )
+                                        $('.progreFour').remove();
+                                        $('.proFour').append(
+                                            '<div class="progress-bar bg-success progreFour" role="progressbar" style="width: '+response.four_percentage+'%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>'
+                                        )
+                                        $('.fourNum').remove();
+                                        $('.foNum').append(
+                                            '<p class="fourNum">' + response.four_percentage + '%</p>'
+                                        )
+                                        $('.progreThree').remove();
+                                        $('.proThree').append(
+                                            '<div class="progress-bar bg-success progreThree" role="progressbar" style="width: '+response.three_percentage+'%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>'
+                                        )
+                                        $('.threeNum').remove();
+                                        $('.theNum').append(
+                                            '<p class="threeNum">' + response.three_percentage + '%</p>'
+                                        )
+                                        $('.progreTwo').remove();
+                                        $('.proTwo').append(
+                                            '<div class="progress-bar bg-success progreTwo" role="progressbar" style="width: '+response.two_percentage+'%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>'
+                                        )
+                                        $('.twoNum').remove();
+                                        $('.twNum').append(
+                                            '<p class="twoNum">' + response.two_percentage + '%</p>'
+                                        )
+                                        $('.progreOne').remove();
+                                        $('.proOne').append(
+                                            '<div class="progress-bar bg-success progreOne" role="progressbar" style="width: '+response.one_percentage+'%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>'
+                                        )
+                                        $('.oneNum').remove();
+                                        $('.onNum').append(
+                                            '<p class="oneNum">' + response.one_percentage + '%</p>'
+                                        )
+                                        $('.note').html('');
+                                        var results = JSON.parse(response["results"]);
+                                        var fields = results[0]["fields"];
+                                        $('.review-row').prepend(
+                                            '<div class="row" id="rvnum_'+ response.id +'">'+
+                                                '<div class="col-md-8">'+
+                                                    '<h3 class="card-title" style="color:rgb(74, 80, 80)">' + response.first_name + ' ' + response.last_name + '<i class="fas fa-fire" style="color: sandybrown; padding-left: 10px; width: 1.5em;"></i></h3>'+
+                                                    '<div class="row">'+
+                                                        '<div class="col-md-1">'+
+                                                            '<a class="badge badge-success"><span style="color: white; font-size: 17px;">'+ fields["rate"] + ' <i class="fas fa-star" style="color:white"></i></span></a>'+
+                                                        '</div>'+
+                                                        '<div class="col-md-11" style="padding-left: 25px;">'+
+                                                            '<h4 class="card-title" style="color:rgb(74, 80, 80)">Verified Buyer</h4>'+
+                                                        '</div>'+
+                                                    '</div>'+
+                                                    '<p style="margin-top: 15px;"><b>'+ fields["title"]+ '</b></p>'+
+                                                    '<p>'+ fields["content"] +'</p>'+
+                                                    '<div class="row">'+
+                                                        '<div class="col-md-5">'+
+                                                            '<h3 class="card-title" style="color: rgb(172, 175, 175); font-size: 18px; margin-top: 8px;"><i class="far fa-thumbs-up"></i> HELPFUL</h3>'+
+                                                        '</div>'+
+                                                        '<div class="col-md-5">'+
+                                                            '<h3 class="card-title" style="color: rgb(172, 175, 175); font-size: 18px; margin-top: 8px;"><i class="fas fa-info-circle"></i> REPORT</h3>'+
+                                                        '</div>'+
+                                                    '</div>'+
+                                                '</div>'+
+                                                '<div class="col-md-4" style="text-align: right;">'+ response.created_at + '</div>' +
+                                            '</div>'+
+                                            '<hr id="num_'+ response.id+ '">'
+                                        );
+                                        toastr.options = {
+                                            "debug": false,
+                                            "newestOnTop": true,
+                                            "progressBar": true,
+                                            "positionClass": "toast-top-right",
+                                            "preventDuplicates": false,
+                                            "showDuration": "500",
+                                            "hideDuration": "1000",
+                                            "timeOut": "5000",
+                                            "extendedTimeOut": "1000",
+                                            "showEasing": "swing",
+                                            "hideEasing": "linear",
+                                            "showMethod": "fadeIn",
+                                            "hideMethod": "fadeOut"
+                                        }
+                                        if (response.status == "success") {
+                                            toastr["success"](response.message);
+                                        }
+                                        else if (response.status == "warning") {
+                                            toastr["warning"](response.message);
+                                        }
+                                        else if (response.status == "error") {
+                                            toastr["error"](response.message);
+                                        }
+                                    }, 1000);
+                                },
+                                // on error
+                                error: function (response) {
+                                    // alert the error if any error occured
+                                    alert(response.status)
+                                }
+                            });
+                            return false;
+                        })
+                    </script>
+                </div>
+            </div>  
+            {% endif %}
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Product similar area -->
+    <div class="row">
+        <div class="col-md-8">
+            <h2 class="card-title" style="color:rgb(104, 103, 103);margin-top: 70px; font-size: 23px;">Products similar
+                to {{ product.product_name }}</h2>
+            <section class="row relate_area" style="margin-top:20px;">
+            <div class="container" style="margin-bottom: 10px;">
+                <div class="row">
+                    <div class="MultiCarousel" data-items="1,2,3,4" data-slide="1" id="MultiCarousel"
+                        data-interval="1000">
+                        <div class="MultiCarousel-inner">
+                            {% for relate in related_products %}
+                            <div class="item">
+                                <a href="{% url 'product-detail' relate.pk %}" style="display: flex; flex-direction: column; justify-content: center; text-align: center;">
+                                    <div class="pad15" style="align-content: center; border-radius: 8%;">
+                                        <img src="{{ relate.image.url }}" alt="{{ new.name }}" width="120" height="120"
+                                            style="padding-top: 5px; border-radius: 8%;"></img>
+                                        <p class="lead text-truncate" style="margin-top: 10%; color: dimgrey;">{{ relate.product_name }}</p>
+                                        <p class="lead" style="color: rgb(130, 127, 127);font-weight: bold">{{ relate.price }} $</p>
+                                    </div>
+                                </a>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <button class="btn btn-secondary leftLst"
+                            style="height: 50px; width: 50px; text-align: center;"><i
+                                class="fas fa-arrow-left"></i></button>
+                        <button class="btn btn-secondary rightLst"
+                            style="height: 50px; width: 50px; text-align: center;"><i
+                                class="fas fa-arrow-right"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row" style="margin-bottom: 160px;">
+        <div class="col-md-8">
+            <div class="container" style="box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px; margin-top: 20px">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h3 class="card-title" style="color: rgb(86, 87, 87);">Want to share the information?</h3>
+                        </div>
+                        <div class="col-md-4" style="text-align: right;">
+                            <div class="fb-share-button" data-href="http://127.0.0.1:7892{% url 'product-detail' product.pk %}" data-layout="button" data-size="small"><a target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fdevelopers.facebook.com%2Fdocs%2Fplugins%2F&amp;src=sdkpreparse" class="fb-xfbml-parse-ignore">Share</a></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+        
+<div id="cssLoader17" class="main-wrap main-wrap--white" style="z-index: 5; display: none;">
+    <div class="loader-background">
+        <div class="cssLoader17"></div>
+    </div>
+</div>
+
+</div>
+
+{% endblock %}
+
+{% block jscode %}
+<script src="{% static 'js/carousel.js' %}" defer></script>
+<script src="{% static 'js/alert.js' %}" defer></script>
+{% endblock %}

@@ -1,0 +1,27 @@
+<div class="bd">
+{% extends "base_generic.html" %}
+{% load i18n %}
+
+{% block content %}
+    <div class="lr-form">
+        <span class="lrhead">{% translate "Join Today" %}</span>
+        <form action="" method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <br>
+            <input type="submit" value="{% translate 'Sign Up' %}">
+        </form>
+        <div style="text-align: center;">
+            <a href="">{% translate "Forgot Password?" %}</a>
+            <p class="text-muted">
+                {% translate "Already Have an Account?" %} <a class="ml-1" href="{% url 'login' %}">{% translate "Sign In" %}</a>
+            </p>
+        </div>
+    </div>
+    <script>
+        $(document).ready(function(e){
+            $("#menu").hide();
+        });
+    </script>
+{% endblock %}
+</div>

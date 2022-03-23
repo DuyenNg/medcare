@@ -1,0 +1,56 @@
+{% if product_page_obj %}
+{% for product in product_page_obj %}
+<tr>
+    <th >
+        {{ forloop.counter }}
+    </th>
+    <td scope="row" class="product_name">
+        <b data-toggle="tooltip" data-placement="top" title="{{ product.product_name }}">{{ product.product_name|truncatechars:18 }}</b>
+    </td>
+    <td class="image">
+        <a href="{{ product.image.url }}" class="avatar" data-toggle="tooltip" data-original-title="{{ product.product_name }}">
+            <img alt="Image placeholder" id="myImage" src="{{ product.image.url }}">
+        </a>
+    </td>
+    <td class="category">
+        <span data-toggle="tooltip" data-placement="top" title="{{ product.category }}">{{ product.category|truncatechars:15 }}</span>
+    </td>
+    <td class="brand">
+        <span data-toggle="tooltip" data-placement="top" title="{{ product.brand }}">{{ product.brand }}</span>
+    </td>
+    <td class="gender">
+        <span data-toggle="tooltip" data-placement="top" title="{{ product.gender }}">{{ product.gender }}</span>
+    </td>
+    <td class="form">
+        <span data-toggle="tooltip" data-placement="top" title="{{ product.form }}">{{ product.form|truncatechars:10 }}</span>
+    </td>
+    <td class="description">
+        {{ product.description|striptags|truncatechars:10 }}
+    </td>
+    <td class="created_at">
+        <span data-toggle="tooltip" data-placement="top" title="{{ product.created_at }}">{{ product.created_at|truncatechars:10 }}</span>
+    </td>
+    <td class="price">
+        <span data-toggle="tooltip" data-placement="top" title="{{ product.price }} $">{{ product.price }} $</span>
+    </td>
+    <td class="quantity">
+        <span data-toggle="tooltip" data-placement="top" title="{{ product.quantity }}">{{ product.quantity }}</span>
+    </td>
+    <td class="text-right">
+        <div class="dropdown">
+            <a class="btn btn-sm btn-icon-only text-light" href="#" role="button"
+                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="fas fa-ellipsis-v"></i>
+            </a>
+            <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
+                <a class="dropdown-item" href="{% url 'admin-product-detail' product.id %}">See details/Edit</a>
+                <a class="dropdown-item deleteProduct" href="" id="product_{{ product.id }}">Delete</a>
+                <a class="dropdown-item" href="{{ product.get_absolute_url }}">View on site</a>
+            </div>
+        </div>
+    </td>
+</tr>
+{% endfor %}
+{% else %}
+<p style="margin-left: 20px; margin-top: 10px;">No products found.</p>
+{% endif %}

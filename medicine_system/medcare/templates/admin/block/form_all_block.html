@@ -1,0 +1,29 @@
+{% load i18n %}
+{% if form_page_obj %}
+{% for form in form_page_obj %}
+<tr>
+    <th scope="row">
+        {{ forloop.counter }}
+    </th>
+    <td class="form_name">
+        <b>{{ form.name }}</b>
+    </td>
+    <td class="text-right">
+        <div class="dropdown">
+            <a class="btn btn-sm btn-icon-only text-light" href="#" role="button"
+                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="fas fa-ellipsis-v"></i>
+            </a>
+            <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
+                <a class="dropdown-item" href="{% url 'admin-form-detail' form.id %}">See details/Edit</a>
+                <a class="dropdown-item deleteForm" href="" id="form_{{ form.id }}">Delete</a>
+            </div>
+        </div>
+    </td>
+</tr>
+{% endfor %}
+{% else %}
+<tr>
+    <td>{% trans 'Do not have any forms yet!' %}</td>
+</tr>
+{% endif %}

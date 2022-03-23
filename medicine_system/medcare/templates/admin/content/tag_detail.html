@@ -1,0 +1,122 @@
+{% extends 'admin/layouts/base.html' %}
+{% load i18n %}
+{% load static %}
+{% block title %} Tag detail {% endblock title %}
+
+{% block content %}
+
+<div class="header bg-light pb-6">
+    <div class="container-fluid">
+        <div class="header-body">
+            <div class="row align-items-center py-4">
+                <div class="col-lg-6 col-7">
+                    <h6 class="h2 text-dark d-inline-block mb-0">Tag Info</h6>
+                    <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+                        <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                            <li class="breadcrumb-item"><a href="{% url 'dashboard' %}"><i class="fas fa-home"></i></a>
+                            </li>
+                            <li class="breadcrumb-item active" aria-current="page">Tag</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid mt--6" style="background-color:lavender;">
+    <div class="row">
+        <div class="col">
+            <div class="card">
+                <!-- Card header -->
+                <div class="card-header border-0">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h3 class="mb-0">Tag # {{ tag.id }}</h3>
+                        </div>
+                        <div class="col-md-6" style="text-align: right;">
+                            <a class="nav-link" href="/admin/medcare/tag/{{ tag.id }}/change/"><i class="ni ni-settings-gear-65"></i><span
+                                    class="nav-link-text"> Click here to modify tag data</span></a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="container rounded bg-white mb-5">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="p-3 py-5">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h4 class="text-right">Tag Settings</h4>
+                                </div>
+                                <div class="alert-area" style="margin-bottom:20px;"></div>
+                                <div class="row mt-3">
+                                    <div class="col-md-12">
+                                        <label class="labels">Name</label>
+                                        <input id="name" type="text" class="form-control" placeholder="name"
+                                            value="{% if tag.name %}{{ tag.name }}{% endif %}">
+                                    </div>
+                                </div>
+                                <div class="row mt-2">
+                                    <div class="col-md-6">
+                                        <label class="labels">Created at</label>
+                                        <input id="created_at" type="text" class="form-control" placeholder="created at"
+                                            value="{% if tag.created_at %}{{ tag.created_at }}{% endif %}" disabled>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-5 text-center">
+                                <a class="updateTag" id="{{ tag.id }}" href="">
+                                    <button class="btn btn-primary col-md-12" type="button">Update</button>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+
+<!-- Specific JS goes HERE -->
+{% block javascripts %}
+<script>
+    $(function () {
+        $(document).on('click', '.updateTag', function (e) {
+            // preventing default actions
+            event.preventDefault();
+            var $id = $(this).attr('id');
+            var form_data = new FormData();
+            form_data.append('name', $("#name").val());
+            form_data.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+            // ajax call
+            $.ajax({
+                type: "POST",
+                // define url name
+                url: "/medcare/admin/tag/" + $id,
+                dataType:'json',
+                data:form_data,
+                cache : false,
+                contentType: false,
+                processData: false,
+                // on success
+                success: function (response) {
+                    $('.alert-area').append(
+                        '<div class="alert alert-'+ response.status +'" role="alert" style="margin-bottom: 10px;">'+
+                            '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>'+
+                                response.message+
+                        '</div>'
+                    )
+                },
+                // on error
+                error: function (response) {
+                    // alert the error if any error occured
+                    alert(response.status)
+                }
+            });
+            return false;
+        });
+    }); 
+</script>
+{% endblock javascripts %}

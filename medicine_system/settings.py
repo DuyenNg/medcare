@@ -87,7 +87,7 @@ WSGI_APPLICATION = 'medicine_system.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': "medcare",
+        'NAME': "medcar",
         'USER': "duyen",
         'PASSWORD': "201740324",
         'HOST': "localhost",

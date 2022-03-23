@@ -1,0 +1,72 @@
+{% extends "base_generic.html" %}
+{% load i18n %}
+{% load static %}
+{% block content %}
+<div class="container" style="margin-bottom: 100px;">
+    <div style="margin-top: 30px; margin-bottom: 30px;">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'news-list' type='News' %}">News</a></li>
+                {% if new.type != 'News' %}
+                <li class="breadcrumb-item"><a href="{% url 'news-list' type=new.type %}">{{ new.type }}</a></li>
+                {% endif %}
+            </ol>
+        </nav>
+    </div>
+
+    <div class="row">
+        <div class="col-md-9">
+            <div style="text-align: justify;">
+                <h1 class="text-center" style="color: black; margin-bottom: 50px;">{{ new.title }}</h1>
+                <h5>Last updated: {{ new.created_at }}</h5>
+                {% autoescape off %}
+                <div style="margin-left:auto; margin-right:auto;">
+                    {{ new.content }}
+                </div>
+                {% endautoescape %}
+            </div>
+        </div>
+
+        <div class="col-md-3" style="padding-right: 0px; margin-top: 30px;">
+            <img class="d-block w-100" src="{% static 'images/ads_10.png' %}" alt="ADS" style="margin-bottom: 20px;">
+            <h3 style="color: #747474; padding: 0.5rem;">Most viewed news </h3>
+            <hr style="margin-top:5px; margin-bottom: 1.5rem;">
+            <div class="container" style="margin-top:10px">
+                {% for new in most_viewed_news %}
+                <div class="row">
+                    <div class="col-md-4" style="padding-left: 0px;">
+                        <a href="{% url 'news-detail' new.id %}">
+                            <img src="{{ new.image.url }}" class="card-img-top" alt="{{ new.id }}" style="margin-top: 2px;">
+                        </a>
+                    </div>
+                    <div class="col-md-8" style="padding-left: 0px; padding-right: 0px;">
+                        <a href="{% url 'news-detail' new.id %}"><h5 class="card-title" style="font-family: unset;">{{ new.title }}</h5></a>
+                    </div>
+                </div>
+                <hr style="margin-top: 1rem; margin-bottom: 1rem;">
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="row" style="margin-bottom: 160px; margin-top: 80px;">
+        <div class="col-md-9">
+            <div class="container" style="box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px; margin-top: 20px">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-10">
+                            <h3 class="card-title" style="color: rgb(86, 87, 87);">Want to share the information?</h3>
+                        </div>
+                        <div class="col-md-2" style="text-align: right;">
+                            <div class="row">
+                                <div class="fb-share-button" data-href="http://127.0.0.1:7892{% url 'news-detail' new.id %}" data-layout="button" data-size="small"><a target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fdevelopers.facebook.com%2Fdocs%2Fplugins%2F&amp;src=sdkpreparse" class="fb-xfbml-parse-ignore">Share</a></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

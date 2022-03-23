@@ -1,0 +1,376 @@
+{% extends 'admin/layouts/base.html' %} {% block title %} Dashboard {% endblock title %}
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %} {% block content %}
+
+<!-- Header -->
+<div class="header bg-light pb-6">
+  <div class="container-fluid">
+    <div class="header-body">
+      <div class="row align-items-center py-4">
+        <div class="col-lg-6 col-7">
+          <h6 class="h2 text-dark d-inline-block mb-0">Dashboard</h6>
+          <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+            <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+              <li class="breadcrumb-item">
+                <a href="/"><i class="fas fa-home"></i></a>
+              </li>
+              <li class="breadcrumb-item active" aria-current="page">
+                Dashboard
+              </li>
+            </ol>
+          </nav>
+        </div>
+      </div>
+      <!-- Card stats -->
+      <div class="row">
+        <div class="col-xl-3 col-md-6">
+          <div class="card card-stats">
+            <!-- Card body -->
+            <div class="card-body">
+              <div class="row">
+                <div class="col">
+                  <h5 class="card-title text-uppercase text-muted mb-0">
+                    Today's Order
+                  </h5>
+                  <span class="h2 font-weight-bold mb-0">{{ today_orders }}</span>
+                </div>
+                <div class="col-auto">
+                  <div class="icon icon-shape bg-gradient-red text-white rounded-circle shadow">
+                    <i class="ni ni-active-40"></i>
+                  </div>
+                </div>
+              </div>
+              <p class="mt-3 mb-0 text-sm">
+                {% if today_orders_percentage < 0 %}
+                <span class="text-warning mr-2"><i class="fas fa-arrow-down text-warning mr-3"></i></i> {{ today_orders_percentage|floatformat:1 }}%</span>
+                {% else %}
+                <span class="text-success mr-2"><i class="fa fa-arrow-up"></i> {{ today_orders_percentage|floatformat:1 }}%</span>
+                {% endif %}
+                <span class="text-nowrap">Since yesterday</span>
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+          <div class="card card-stats">
+            <!-- Card body -->
+            <div class="card-body">
+              <div class="row">
+                <div class="col">
+                  <h5 class="card-title text-uppercase text-muted mb-0">
+                    Monthly Orders
+                  </h5>
+                  <span class="h2 font-weight-bold mb-0">{{ month_orders }}</span>
+                </div>
+                <div class="col-auto">
+                  <div class="icon icon-shape bg-gradient-orange text-white rounded-circle shadow">
+                    <i class="ni ni-chart-pie-35"></i>
+                  </div>
+                </div>
+              </div>
+              <p class="mt-3 mb-0 text-sm">
+                {% if month_orders_percentage < 0 %}
+                <span class="text-warning mr-2"><i class="fas fa-arrow-down text-warning mr-3"></i></i> {{ month_orders_percentage|floatformat:1 }}%</span>
+                {% else %}
+                <span class="text-success mr-2"><i class="fa fa-arrow-up"></i> {{ month_orders_percentage|floatformat:1 }}%</span>
+                {% endif %}
+                <span class="text-nowrap">Since last month</span>
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+          <div class="card card-stats">
+            <!-- Card body -->
+            <div class="card-body">
+              <div class="row">
+                <div class="col">
+                  <h5 class="card-title text-uppercase text-muted mb-0">
+                    Total orders
+                  </h5>
+                  <span class="h2 font-weight-bold mb-0">{{ total_orders }}</span>
+                </div>
+                <div class="col-auto">
+                  <div class="icon icon-shape bg-gradient-info text-white rounded-circle shadow">
+                    <i class="ni ni-chart-bar-32"></i>
+                  </div>
+                </div>
+              </div>
+              <p class="mt-3 mb-0 text-sm">
+                <span class="text-success mr-2"> </span>
+                <span class="text-nowrap"></span>
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+          <div class="card card-stats">
+            <!-- Card body -->
+            <div class="card-body">
+              <div class="row">
+                <div class="col">
+                  <h5 class="card-title text-uppercase text-muted mb-0">
+                    New users
+                  </h5>
+                  <span class="h2 font-weight-bold mb-0">{{ new_users }}</span>
+                </div>
+                <div class="col-auto">
+                  <div class="icon icon-shape bg-gradient-green text-white rounded-circle shadow">
+                    <i class="ni ni-money-coins"></i>
+                  </div>
+                </div>
+              </div>
+              <p class="mt-3 mb-0 text-sm">
+                {% if month_users_percentage < 0 %}
+                <span class="text-warning mr-2"><i class="fas fa-arrow-down text-warning mr-3"></i></i> {{ month_users_percentage|floatformat:1 }}%</span>
+                {% else %}
+                <span class="text-success mr-2"><i class="fa fa-arrow-up"></i> {{ month_users_percentage|floatformat:1 }}%</span>
+                {% endif %}
+                <span class="text-nowrap">Since last month</span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Page content -->
+<div class="container-fluid mt--6">
+  <div class="row">
+    <div class="col-xl-6">
+      <div class="card">
+        <div class="card-header border-0">
+          <div class="row align-items-center">
+            <div class="col">
+              <h3 class="mb-0">Popular products</h3>
+            </div>
+            <div class="col text-right">
+              <a href="" data-toggle="modal" data-target="#popularModal" class="btn btn-sm btn-primary">See all</a>
+              <!-- All popular product Modal -->
+              <div class="modal fade text-left" id="popularModal" tabindex="-1" role="dialog" aria-labelledby="popularModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h3 class="modal-title" id="popularModalLabel">All popular products</h3>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                      <table class="table align-items-center table-flush">
+                        <thead class="thead-light">
+                          <tr>
+                            <th scope="col">No.</th>
+                            <th scope="col">Product name</th>
+                            <th scope="col">Image</th>
+                            <th scope="col">Total sales</th>
+                            <th scope="col" class="sort"></th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {% for product in all_popular_products %}
+                          <tr>
+                            <th scope="row">
+                              {{ forloop.counter }}
+                            </th>
+                            <td>
+                              <b data-toggle="tooltip" data-placement="top" title="{{ product.product_name }}">{{ product.product_name|truncatechars:40 }}</b>
+                            </td>
+                            <td>
+                              <a href="{{ product.image.url }}" class="avatar" data-toggle="tooltip" data-original-title="{{ product.product_name }}">
+                                <img alt="Image placeholder" id="myImage" src="{{ product.image.url }}">
+                              </a>
+                            </td>
+                            <td>{{ product.get_total_sales }}</td>
+                            <td class="text-right">
+                              <div class="dropdown">
+                                  <a class="btn btn-sm btn-icon-only text-light" href="#" role="button"
+                                      data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                      <i class="fas fa-ellipsis-v"></i>
+                                  </a>
+                                  <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
+                                      <a class="dropdown-item" href="{% url 'admin-product-detail' product.id %}">See details/Edit</a>
+                                  </div>
+                              </div>
+                            </td>
+                          </tr>
+                          {% endfor %}
+                        </tbody>
+                      </table>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary close_modal" data-dismiss="modal">Cancel</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="table-responsive">
+          <!-- Projects table -->
+          <table class="table align-items-center table-flush">
+            <thead class="thead-light">
+              <tr>
+                <th scope="col">No.</th>
+                <th scope="col">Product name</th>
+                <th scope="col">Image</th>
+                <th scope="col">Total sales</th>
+                <th scope="col" class="sort"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for product in popular_products %}
+              <tr>
+                <th scope="row">
+                  {{ forloop.counter }}
+                </th>
+                <td>
+                  <b data-toggle="tooltip" data-placement="top" title="{{ product.product_name }}">{{ product.product_name|truncatechars:40 }}</b>
+                </td>
+                <td>
+                  <a href="{{ product.image.url }}" class="avatar" data-toggle="tooltip" data-original-title="{{ product.product_name }}">
+                    <img alt="Image placeholder" id="myImage" src="{{ product.image.url }}">
+                  </a>
+                </td>
+                <td>{{ product.get_total_sales }}</td>
+                <td class="text-right">
+                  <div class="dropdown">
+                      <a class="btn btn-sm btn-icon-only text-light" href="#" role="button"
+                          data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                          <i class="fas fa-ellipsis-v"></i>
+                      </a>
+                      <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
+                          <a class="dropdown-item" href="{% url 'admin-product-detail' product.id %}">See details/Edit</a>
+                      </div>
+                  </div>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="col-xl-6">
+      <div class="card">
+        <div class="card-header border-0">
+          <div class="row align-items-center">
+            <div class="col">
+              <h3 class="mb-0">Most viewed news</h3>
+            </div>
+            <div class="col text-right">
+              <a href="" data-toggle="modal" data-target="#viewModal" class="btn btn-sm btn-primary">See all</a>
+              <!-- All most viewed news Modal -->
+              <div class="modal fade text-left" id="viewModal" tabindex="-1" role="dialog" aria-labelledby="viewModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h3 class="modal-title" id="viewModalLabel">All most viewed news</h3>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                      <table class="table align-items-center table-flush">
+                        <thead class="thead-light">
+                          <tr>
+                            <th scope="col">No.</th>
+                            <th scope="col">Content</th>
+                            <th scope="col">Visitors</th>
+                            <th scope="col">Type</th>
+                            <th scope="col" class="sort"></th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {% for new in all_most_viewed_news %}
+                          <tr>
+                            <th scope="row">
+                              {{ forloop.counter }}
+                            </th>
+                            <td>
+                              <b data-toggle="tooltip" data-placement="top" title="{{ new.title }}">{{ new.title|truncatechars:30 }}</b>
+                            </td>
+                            <td>{{ new.viewed }}</td>
+                            <td>{{ new.type }}</td>
+                            <td class="text-right">
+                              <div class="dropdown">
+                                  <a class="btn btn-sm btn-icon-only text-light" href="#" role="button"
+                                      data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                      <i class="fas fa-ellipsis-v"></i>
+                                  </a>
+                                  <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
+                                      <a class="dropdown-item" href="{% url 'admin-news-detail' new.id %}">See details/Edit</a>
+                                  </div>
+                              </div>
+                            </td>
+                          </tr>
+                          {% endfor %}
+                        </tbody>
+                      </table>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary close_modal" data-dismiss="modal">Cancel</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="table-responsive">
+          <!-- Projects table -->
+          <table class="table align-items-center table-flush">
+            <thead class="thead-light">
+              <tr>
+                <th scope="col">No.</th>
+                <th scope="col">Content</th>
+                <th scope="col">Visitors</th>
+                <th scope="col">Type</th>
+                <th scope="col" class="sort"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for new in most_viewed_news %}
+              <tr>
+                <th scope="row">
+                  {{ forloop.counter }}
+                </th>
+                <td>
+                  <b data-toggle="tooltip" data-placement="top" title="{{ new.title }}">{{ new.title|truncatechars:30 }}</b>
+                </td>
+                <td>{{ new.viewed }}</td>
+                <td>{{ new.type }}</td>
+                <td class="text-right">
+                  <div class="dropdown">
+                      <a class="btn btn-sm btn-icon-only text-light" href="#" role="button"
+                          data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                          <i class="fas fa-ellipsis-v"></i>
+                      </a>
+                      <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
+                          <a class="dropdown-item" href="{% url 'admin-news-detail' new.id %}">See details/Edit</a>
+                      </div>
+                  </div>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock content %}
+
+<!-- Specific JS goes HERE -->
+{% block javascripts %}
+<script src="/static/js/argon.js?v=1.2.0"></script>
+<script src="/static/vendor/chart.js/dist/Chart.min.js"></script>
+<script src="/static/vendor/chart.js/dist/Chart.extension.js"></script>
+
+{% endblock javascripts %}

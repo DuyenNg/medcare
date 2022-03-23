@@ -1,0 +1,25 @@
+{% if navbar_page_obj %}
+{% for navbar in navbar_page_obj %}
+<tr>
+    <th scope="row">
+        {{ forloop.counter }}
+    </th>
+    <td class="navbar_name">
+        <b>{{ navbar.name }}</b>
+    </td>
+    <td class="text-right">
+        <div class="dropdown">
+            <a class="btn btn-sm btn-icon-only text-light" href="#" role="button"
+                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="fas fa-ellipsis-v"></i>
+            </a>
+            <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
+                <a class="dropdown-item" href="{% url 'admin-navbar-detail' navbar.id %}">See details/Edit</a>
+            </div>
+        </div>
+    </td>
+</tr>
+{% endfor %}
+{% else %}
+<p style="margin-left: 20px; margin-top: 10px;">No navbars found.</p>
+{% endif %}

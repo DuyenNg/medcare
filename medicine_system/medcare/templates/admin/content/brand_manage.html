@@ -1,0 +1,245 @@
+{% extends 'admin/layouts/base.html' %}
+{% load i18n %}
+{% load static %}
+{% block title %} All products {% endblock title %}
+
+{% block content %}
+
+<div class="header bg-light pb-6">
+    <div class="container-fluid">
+        <div class="header-body">
+            <div class="row align-items-center py-4">
+                <div class="col-lg-6 col-7">
+                    <h6 class="h2 text-dark d-inline-block mb-0">Brands Summary</h6>
+                    <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+                        <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                            <li class="breadcrumb-item"><a href="{% url 'dashboard' %}"><i class="fas fa-home"></i></a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Brand</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="col-lg-3 col-5 text-right">
+                    <!-- Search form -->
+                    <form class="navbar-search navbar-search-light form-inline" id="search-brand">
+                        <div class="form-group mb-0">
+                        <div class="input-group input-group-alternative input-group-merge">
+                            <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fas fa-search"></i></span>
+                            </div>
+                            <input class="form-control" name="search-input" placeholder="Search" type="text">
+                        </div>
+                        </div>
+                        <button type="button" class="close" data-action="search-close" data-target="#search-brand" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                        </button>
+                    </form>
+                </div>
+                <div class="col-lg-3 col-5 text-right">
+                    <a href="" data-toggle="modal" data-target="#brandModal" class="btn btn-sm btn-neutral">New</a>
+                    <!-- Add brand Modal -->
+                    <div class="modal fade text-left" id="brandModal" tabindex="-1" role="dialog" aria-labelledby="brandModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg" style="max-width: 910px;" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h3 class="modal-title" id="brandModalLabel">Add new brand</h3>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form method="POST" id="addBrand" action="{% url 'admin-brand' %}" enctype="multipart/form-data">
+                                    {% csrf_token %}
+                                    {{ admin_brand_form.text | safe }}
+                                    {{ admin_brand_form.media }}
+                                    {{ admin_brand_form.as_p }}
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary close_modal" data-dismiss="modal">Cancel</button>
+                                        <a class="addProduct" href="">
+                                            <button type="submit" name="report" class="btn btn-primary">Summit</button>
+                                        </a>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                    <a href="{% url 'admin-brand-export' %}" class="btn btn-sm btn-neutral">Export</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid mt--6" style="background-color:lavender;">
+    <div class="row">
+        <div class="col">
+            <div class="card">
+                <!-- Card header -->
+                <div class="card-header border-0">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h3 class="mb-0">Brand Info</h3>
+                        </div>
+                        <div class="col-md-6" style="text-align: right;">
+                            <a class="nav-link" href="/admin/medcare/brand/"><i class="ni ni-settings-gear-65"></i><span class="nav-link-text"> Click here to modify brand data</span></a>
+                        </div>
+                    </div>
+                    <div class="success-alert-area" style="margin-top:20px; margin-bottom: 20px;"></div>
+                </div>
+                <!-- Light table -->
+                <div class="table-responsive">
+                    <table class="table align-items-center table-flush">
+                        <thead class="thead-light">
+                            <tr>
+                                <th scope="col" class="sort" data-sort="id">No.</th>
+                                <th scope="col" class="sort" data-sort="brand_name">Brand name</th>
+                                <th scope="col" class="sort" data-sort="image">Image</th>
+                                <th scope="col" class="sort"></th>
+                            </tr>
+                        </thead>
+                        <tbody class="brand-list">
+                            {% if brand_list.exists %}
+                            {% for brand in brand_page_obj %}
+                            <tr>
+                                <th scope="row">
+                                    {{ forloop.counter }}
+                                </th>
+                                <td class="brand_name">
+                                    <b>{{ brand.name }}</b>
+                                </td>
+                                <td class="image">
+                                    <a href="{{ brand.image.url }}" class="avatar" data-toggle="tooltip" data-original-title="{{ brand.name }}">
+                                        <img alt="Image placeholder" src="{{ brand.image.url }}">
+                                    </a>
+                                </td>
+                                <td class="text-right">
+                                    <div class="dropdown">
+                                        <a class="btn btn-sm btn-icon-only text-light" href="#" role="button"
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <i class="fas fa-ellipsis-v"></i>
+                                        </a>
+                                        <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
+                                            <a class="dropdown-item" href="{% url 'admin-brand-detail' brand.id %}">See details/Edit</a>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            {% else %}
+                            <tr>
+                                <td>{% trans 'Do not have any brands yet!' %}</td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Card footer -->
+                <div class="card-footer py-4" id="footer">
+                    <nav aria-label="...">
+                        <ul class="pagination justify-content-end mb-0">
+                            {% if brand_page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ brand_page_obj.previous_page_number }}"
+                                    tabindex="-1">
+                                    <i class="fas fa-angle-left"></i>
+                                    <span class="sr-only">Previous</span>
+                                </a>
+                            </li>
+                            {% endif %}
+
+                            {% for page_num in brand_page_obj.paginator.page_range %}
+                            {% if brand_page_obj.number == page_num %}
+                            <li class="page-item active">
+                                <a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a>
+                            </li>
+                            {% else %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a>
+                            </li>
+                            {% endif %}
+                            {% endfor %}
+
+                            {% if brand_page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ brand_page_obj.next_page_number }}">
+                                    <i class="fas fa-angle-right"></i>
+                                    <span class="sr-only">Next</span>
+                                </a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    {% endblock content %}
+
+    <!-- Specific JS goes HERE -->
+    {% block javascripts %}
+    <script type="text/javascript">
+        document.getElementById('id_image').classList.add('form-control');
+        document.getElementById('id_advert_image').classList.add('form-control');
+    </script>
+    
+    <script>
+        $(function () {
+            $('#addBrand').submit(function (event) {
+                // create an AJAX call
+                event.preventDefault();
+                var form_data = new FormData(this);
+                form_data.append('action', "addBrand");
+                $.ajax({
+                    data: form_data,
+                    processData: false,
+                    contentType: false, // get the form data
+                    type: $(this).attr('method'), // GET or POST
+                    url: $(this).attr('action'), // the file to call
+                    // on success
+                    success: function (data) {
+                        if (data.list[1].status=="success"){
+                            $('.success-alert-area').append(
+                            '<div class="alert alert-'+ data.list[1].status +'" role="alert" style="margin-bottom: 10px;">'+
+                                '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>'+
+                                    data.list[1].message+
+                            '</div>'
+                            );
+                            $('.close_modal').click();
+                            $("tbody.brand-list").html('');
+                            $("tbody.brand-list").append(data.list[0]);
+                        }
+                    },
+                    // on error
+                    error: function (resppnse) {
+                        // alert the error if any error occured
+                        alert(resppnse.status)
+                    }
+                });
+                return false;
+            });
+        }); 
+    </script>
+    
+    <script>
+        $("#search-brand").submit(function(e) {
+            e.preventDefault(); // avoid to execute the actual submit of the form.
+            var value = $('input[name="search-input"]').val()
+            $.ajax({
+                type: "POST",
+                url: "/medcare/admin/brand/search/",
+                data: {
+                    value: value,
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                }, // serializes the form's elements.
+                success: function(data)
+                {
+                    $("tbody.brand-list").html('');
+                    $("tbody.brand-list").append(data.list);
+                    document.getElementById("footer").style.display = "none" 
+                }
+            });
+        });
+    </script>
+    {% endblock javascripts %}

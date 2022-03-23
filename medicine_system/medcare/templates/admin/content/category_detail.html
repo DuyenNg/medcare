@@ -1,0 +1,160 @@
+{% extends 'admin/layouts/base.html' %}
+{% load i18n %}
+{% load static %}
+{% block title %} Category detail {% endblock title %}
+
+{% block content %}
+
+<div class="header bg-light pb-6">
+    <div class="container-fluid">
+        <div class="header-body">
+            <div class="row align-items-center py-4">
+                <div class="col-lg-6 col-7">
+                    <h6 class="h2 text-dark d-inline-block mb-0">Category Info</h6>
+                    <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+                        <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                            <li class="breadcrumb-item"><a href="{% url 'dashboard' %}"><i class="fas fa-home"></i></a>
+                            </li>
+                            <li class="breadcrumb-item active" aria-current="page">Category</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid mt--6" style="background-color:lavender;">
+    <div class="row">
+        <div class="col">
+            <div class="card">
+                <!-- Card header -->
+                <div class="card-header border-0">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h3 class="mb-0">Category # {{ category.id }}</h3>
+                        </div>
+                        <div class="col-md-6" style="text-align: right;">
+                            <a class="nav-link" href="/admin/medcare/category/{{ category.id }}/change/"><i class="ni ni-settings-gear-65"></i><span
+                                    class="nav-link-text"> Click here to modify category data</span></a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="container rounded bg-white mb-5">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="p-3 py-5">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h4 class="text-right">Category Settings</h4>
+                                </div>
+                                <div class="alert-area" style="margin-bottom:20px;"></div>
+                                <div class="row mt-3">
+                                    <div class="col-md-12">
+                                        <label class="labels">Name</label>
+                                        <input id="name" type="text" class="form-control" placeholder="name"
+                                            value="{% if category.name %}{{ category.name }}{% endif %}">
+                                    </div>
+                                </div>
+                                <div class="row mt-2">
+                                    <div class="col-md-6">
+                                        <label class="required" for="id_image">Image</label>
+                                        <p class="file-upload">
+                                            Currently: <a href="/media/{{ category.image }}">{{ category.image }}</a><br>
+                                            Change: <input type="file" name="image" accept="image/*" id="id_image">
+                                        </p>     
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="required" for="id_image">Advert image</label>
+                                        <p class="file-upload">
+                                            Currently: <a href="/media/{{ category.advert_image }}">{{ category.advert_image }}</a><br>
+                                            Change: <input type="file" name="image" accept="image/*" id="id_advert_image">
+                                        </p>  
+                                    </div>
+                                </div>
+                                <div class="row mt-2">
+                                    <div class="col-md-6">
+                                        <label class="required" for="id_navbar">Navbar:</label>
+                                        <select name="navbar" required="" id="navbar_{{ category.id }}" class="form-control">
+                                            <option value="">---------</option>
+                                            {% for navbar in navbars %}
+                                            <option value="{{ navbar.id }}" {% if category.navbar.id == navbar.id %}selected=""{% endif %}>{{ navbar.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="labels">Created at</label>
+                                        <input id="created_at" type="text" class="form-control" placeholder="created at"
+                                            value="{% if category.created_at %}{{ category.created_at }}{% endif %}" disabled>
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-md-6">
+                                        <div class="form-check form-check-inline">
+                                            <input id="is_popular" class="form-check-input" type="checkbox"
+                                                id="inlineCheckbox1" {% if category.is_popular == True %}checked{% endif %}>
+                                            <label class="form-check-label" for="inlineCheckbox1">Is popular</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-5 text-center">
+                                <a class="updateCategory" id="{{ category.id }}" href="">
+                                    <button class="btn btn-primary col-md-12" type="button">Update</button>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+
+<!-- Specific JS goes HERE -->
+{% block javascripts %}
+<script>
+    $(function () {
+        $(document).on('click', '.updateCategory', function (e) {
+            // preventing default actions
+            event.preventDefault();
+            var $id = $(this).attr('id');
+            var form_data = new FormData();
+            form_data.append('name', $("#name").val());
+            form_data.append('image', $("#id_image")[0].files[0]);
+            form_data.append('advert_image', $("#id_advert_image")[0].files[0]);
+            form_data.append('navbar', $('select#navbar_'+$id).val());
+            form_data.append('is_popular', $("#is_popular").val());
+            form_data.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+            // ajax call
+            $.ajax({
+                type: "POST",
+                // define url name
+                url: "/medcare/admin/category/" + $id,
+                dataType:'json',
+                data:form_data,
+                cache : false,
+                contentType: false,
+                processData: false,
+                // on success
+                success: function (response) {
+                    $('.alert-area').append(
+                        '<div class="alert alert-'+ response.status +'" role="alert" style="margin-bottom: 10px;">'+
+                            '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>'+
+                                response.message+
+                        '</div>'
+                    )
+                },
+                // on error
+                error: function (response) {
+                    // alert the error if any error occured
+                    alert(response.status)
+                }
+            });
+            return false;
+        });
+    }); 
+</script>
+{% endblock javascripts %}

@@ -1,0 +1,216 @@
+{% extends 'admin/layouts/base.html' %}
+{% load i18n %}
+{% load static %}
+{% block title %} All customers {% endblock title %}
+
+{% block content %}
+
+<div class="header bg-light pb-6">
+    <div class="container-fluid">
+        <div class="header-body">
+            <div class="row align-items-center py-4">
+                <div class="col-lg-6 col-7">
+                    <h6 class="h2 text-dark d-inline-block mb-0">Users Summary</h6>
+                    <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+                        <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                            <li class="breadcrumb-item"><a href="{% url 'dashboard' %}"><i class="fas fa-home"></i></a></li>
+                            <li class="breadcrumb-item active" aria-current="page">User</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="col-lg-3 col-5 text-right">
+                    <!-- Search form -->
+                    <form class="navbar-search navbar-search-light form-inline" id="search-user">
+                        <div class="form-group mb-0">
+                        <div class="input-group input-group-alternative input-group-merge">
+                            <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fas fa-search"></i></span>
+                            </div>
+                            <input class="form-control" name="search-input" placeholder="Search" type="text">
+                        </div>
+                        </div>
+                        <button type="button" class="close" data-action="search-close" data-target="#navbar-search-main" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                        </button>
+                    </form>
+                </div>
+                <div class="col-lg-3 col-5 text-right">
+                    <a href="{% url 'admin-user-export' %}" class="btn btn-sm btn-neutral">Export</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="container-fluid mt--6" style="background-color:lavender;">
+    <div class="row">
+        <div class="col">
+            <div class="card">
+                <!-- Card header -->
+                <div class="card-header border-0">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h3 class="mb-0">User Info</h3>
+                        </div>
+                        <div class="col-md-6" style="text-align: right;">
+                            <a class="nav-link" href="/admin/medcare/user/"><i class="ni ni-settings-gear-65"></i><span class="nav-link-text"> Click here to modify user data</span></a>
+                        </div>
+                    </div>
+                </div>
+                <!-- Light table -->
+                <div class="table-responsive">
+                    <table class="table align-items-center table-flush">
+                        <thead class="thead-light">
+                            <tr>
+                                <th scope="col" class="sort" data-sort="id">No.</th>
+                                <th scope="col" class="sort" data-sort="email">Email</th>
+                                <th scope="col" class="sort" data-sort="name">Username</th>
+                                <th scope="col" class="sort" data-sort="first_name">First name</th>
+                                <th scope="col" class="sort" data-sort="last_name">Last name</th>
+                                <th scope="col" class="sort" data-sort="phone_number">Phone number</th>
+                                <th scope="col" class="sort" data-sort="address">Address</th>
+                                <th scope="col" class="sort" data-sort="admin">Admin</th>
+                                <th scope="col" class="sort" data-sort="staff">Staff</th>
+                                <th scope="col" class="sort"></th>
+                            </tr>
+                        </thead>
+                        <tbody class="user-list">
+                            {% if user_list.exists %}
+                            {% for user in user_page_obj %}
+                            <tr>
+                                <th scope="row">
+                                    {{ forloop.counter }}
+                                </th>
+                                <td class="email">
+                                    <b>{{ user.email }}</b>
+                                </td>
+                                <td class="username">
+                                    {% if user.username %}
+                                    {{ user.username }}
+                                    {% else %}
+                                    None
+                                    {% endif %}
+                                </td>
+                                <td class="first_name">
+                                    {% if user.first_name %}
+                                    {{ user.first_name }} 
+                                    {% else %}
+                                    None
+                                    {% endif %}
+                                </td>
+                                <td class="last_name">
+                                    {% if user.last_name %}
+                                    {{ user.last_name }}
+                                    {% else %}
+                                    None
+                                    {% endif %}
+                                </td>
+                                <td class="phone_number">
+                                    {{ user.phone_number }}
+                                </td>
+                                <td class="address">
+                                    <span data-toggle="tooltip" data-placement="top" title="{{ user.address }}">{{ user.address|truncatechars:15 }}</span>
+                                </td>
+                                <td class="admin">
+                                    {% if user.is_admin %}
+                                    <i class="ni ni-check-bold text-success"></i>
+                                    {% else %}
+                                    <i class="ni ni-fat-remove text-danger"></i>
+                                    {% endif %}
+                                </td>
+                                <td class="staff">
+                                    {% if user.is_staff %}
+                                    <i class="ni ni-check-bold text-success"></i>
+                                    {% else %}
+                                    <i class="ni ni-fat-remove text-danger"></i>
+                                    {% endif %}
+                                </td>
+                                <td class="text-right">
+                                    <div class="dropdown">
+                                        <a class="btn btn-sm btn-icon-only text-light" href="#" role="button"
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <i class="fas fa-ellipsis-v"></i>
+                                        </a>
+                                        <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
+                                            <a class="dropdown-item" href="{% url 'admin-user-detail' user.id %}">See details/Edit</a>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            {% else %}
+                            <tr>
+                                <td>{% trans 'Do not have any users yet!' %}</td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Card footer -->
+                <div class="card-footer py-4" id="footer">
+                    <nav aria-label="...">
+                        <ul class="pagination justify-content-end mb-0">
+                            {% if user_page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ user_page_obj.previous_page_number }}"
+                                    tabindex="-1">
+                                    <i class="fas fa-angle-left"></i>
+                                    <span class="sr-only">Previous</span>
+                                </a>
+                            </li>
+                            {% endif %}
+
+                            {% for page_num in user_page_obj.paginator.page_range %}
+                            {% if user_page_obj.number == page_num %}
+                            <li class="page-item active">
+                                <a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a>
+                            </li>
+                            {% else %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a>
+                            </li>
+                            {% endif %}
+                            {% endfor %}
+
+                            {% if user_page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ user_page_obj.next_page_number }}">
+                                    <i class="fas fa-angle-right"></i>
+                                    <span class="sr-only">Next</span>
+                                </a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+
+<!-- Specific JS goes HERE -->
+{% block javascripts %}
+<script>
+    $("#search-user").submit(function(e) {
+        e.preventDefault(); // avoid to execute the actual submit of the form.
+        var value = $('input[name="search-input"]').val()
+        $.ajax({
+            type: "POST",
+            url: "/medcare/admin/user/search/",
+            data: {
+                value: value,
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+            }, // serializes the form's elements.
+            success: function(data)
+            {
+                $("tbody.user-list").html('');
+                $("tbody.user-list").append(data.list);
+                document.getElementById("footer").style.display = "none" 
+            }
+        });
+    });
+</script>
+{% endblock javascripts %}

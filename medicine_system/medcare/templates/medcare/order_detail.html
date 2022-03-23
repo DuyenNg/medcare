@@ -1,0 +1,43 @@
+{% extends "base_generic.html" %}
+{% load mathfilters %}
+{% load static %}
+{% load i18n %}
+{% block content %}
+<div class="container my-4">
+    <h2 class="text-center my-4" style="font-size: 23px;">{% trans 'Order Detail - Total Price: ' %}{{total}} $</h2>
+    {% if status == 'A' %}
+        <h3 class="text-center my-4" style="font-size: larger;">{% trans 'Status: ' %}<span class="badge badge-success">{% trans 'Approved' %}</span></h3>
+    {% elif status == 'W' %}
+        <h3 class="text-center my-4" style="font-size: larger;">{% trans 'Status: ' %}<span class="badge badge-warning">{% trans 'Waiting' %}</span></h3>
+    {% elif status == 'R' %}
+        <h3 class="text-center my-4" style="font-size: larger;">{% trans 'Status: ' %}<span class="badge badge-danger">{% trans 'Rejected' %}</span></h3>
+    {% endif %}
+    
+    <div class="row justify-content-center my-5">
+        <div class=" col-8">
+            {% for product in detail %}
+                <div class="row order-item">
+                    <div class="col-md-3">
+                        <img src="{{ product.product.image.url }}" class="card-img-top" width="120" height="170">
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-8">
+                        <div class="row">
+                            <div class="col-md-7">
+                                <p class="font-weight-bold">{{product.product.product_name}}</p>
+                                <p>{% trans 'Price each: ' %}<span class="text-info">{{product.product.price}} $</span></p>
+                                <a href="{% url 'product-detail' product.product.id %}" class="btn btn-primary">{% trans 'Details ' %}<i class="fas fa-info-circle"></i></a>
+                            </div>
+                            <div class="col-md-5">
+                                <p>{% trans 'Quantity: ' %}<span class="text-primary font-weight-bold">{{product.quantity}}</span></p>
+                                <p>{% trans 'Total: ' %}<span class="text-info font-weight-bold">{{product.quantity|mul:product.product.price|floatformat:2 }} $</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <br>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

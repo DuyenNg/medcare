@@ -1,0 +1,131 @@
+{% extends 'admin/layouts/base.html' %}
+{% load i18n %}
+{% load static %}
+{% block title %} Report detail {% endblock title %}
+
+{% block content %}
+
+<div class="header bg-light pb-6">
+    <div class="container-fluid">
+        <div class="header-body">
+            <div class="row align-items-center py-4">
+                <div class="col-lg-6 col-7">
+                    <h6 class="h2 text-dark d-inline-block mb-0">Report Info</h6>
+                    <nav aria-label="breadcrumb" class="d-none d-md-inline-block ml-md-4">
+                        <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+                            <li class="breadcrumb-item"><a href="{% url 'dashboard' %}"><i class="fas fa-home"></i></a>
+                            </li>
+                            <li class="breadcrumb-item active" aria-current="page">Report</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid mt--6" style="background-color:lavender;">
+    <div class="row">
+        <div class="col">
+            <div class="card">
+                <!-- Card header -->
+                <div class="card-header border-0">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h3 class="mb-0">Report # {{ report.id }}</h3>
+                        </div>
+                        <div class="col-md-6" style="text-align: right;">
+                            <a class="nav-link" href="/admin/medcare/report/{{ report.id }}/change/"><i class="ni ni-settings-gear-65"></i><span
+                                    class="nav-link-text"> Click here to modify report data</span></a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="container rounded bg-white mb-5">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="p-3 py-5">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h4 class="text-right">Report Settings</h4>
+                                </div>
+                                <div class="alert-area" style="margin-bottom:20px;"></div>
+                                <div class="row mt-3">
+                                    <div class="col-md-6">
+                                        <label class="labels">User email</label>
+                                        <input id="user" type="text" class="form-control" placeholder="user email"
+                                            value="{% if report.user %}{{ report.user.email }}{% endif %}" disabled>
+                                    </div>
+                                </div>
+                                <div class="row mt-2">
+                                    <div class="col-md-6">
+                                        <label class="labels">About review</label>
+                                        <input id="review" type="text" class="form-control" placeholder="review"
+                                            value="{% if report.review %}{{ report.review.id }}{% endif %}" disabled>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div style="margin-top: 45px;">
+                                            <a href="" data-toggle="modal" data-target="#reviewModal"><i class="far fa-eye" href=""></i></a>
+                                            <!-- Review Modal -->
+                                            <div class="modal fade text-left" id="reviewModal" tabindex="-1" role="dialog" aria-labelledby="reviewModalLabel" aria-hidden="true">
+                                                <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg" role="document">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h3 class="modal-title" id="exampleModalLabel">{% trans 'Review detail' %}</h3>
+                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                            </button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <h4 style="padding-top: 8px;">User email:</h4>
+                                                            {{ report.review.user.email }}
+                                                            <h4 style="padding-top: 8px;">Reviewed about product:</h4>
+                                                            {{ report.review.product.product_name }}
+                                                            <h4 style="padding-top: 8px;">Title:</h4>
+                                                            {{ report.review.title }}
+                                                            <h4 style="padding-top: 8px;">Content:</h4>
+                                                            {{ report.review.content }}
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary close_modal" data-dismiss="modal">{% trans 'Cancel' %}</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-md-12">
+                                        <label class="labels">Title</label>
+                                        <input id="title" type="text" class="form-control" placeholder="title"
+                                            value="{% if report.title %}{{ report.title }}{% endif %}" disabled>
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-md-12">
+                                        <label class="labels">Content</label>
+                                        <input id="content" type="textarea" class="form-control" placeholder="content"
+                                            value="{% if report.content %}{{ report.content }}{% endif %}" disabled>
+                                    </div>
+                                </div>
+                                <div class="row mt-2">
+                                    <div class="col-md-6">
+                                        <label class="labels">Created at</label>
+                                        <input id="created_at" type="text" class="form-control" placeholder="created at"
+                                            value="{% if report.created_at %}{{ report.created_at }}{% endif %}" disabled>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+
+<!-- Specific JS goes HERE -->
+{% block javascripts %}
+{% endblock javascripts %}

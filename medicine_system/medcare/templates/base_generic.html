@@ -1,0 +1,139 @@
+{% load i18n %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <!--Chart js-->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" integrity="sha256-Uv9BNBucvCPipKQ2NS9wYpJmi8DTOEfTA/nH2aoJALw=" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.css" integrity="sha256-aa0xaJgmK/X74WM224KMQeNQC2xYKwlAt08oZqjeF0E=" crossorigin="anonymous" />
+  <!-- Ajax and Jquery -->
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+  <!--Bootstrap-->
+  <link rel="stylesheet" href="https://unpkg.com/@trevoreyre/autocomplete-js/dist/style.css" />
+  <!-- <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/v4-shims.css">
+  <script defer src="https://use.fontawesome.com/releases/v5.15.4/js/all.js"></script>
+  <script defer src="https://use.fontawesome.com/releases/v5.15.4/js/v4-shims.js"></script> -->
+  <script type="text/javascript" src="https://cdn.rawgit.com/igorlino/elevatezoom-plus/1.1.17/src/jquery.ez-plus.js"></script>
+  <link rel="stylesheet" type="text/css" href="https://cdn.rawgit.com/igorlino/elevatezoom-plus/1.1.17/css/jquery.ez-plus.css" media="screen">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js" defer></script>
+
+  {% block jscode %}{% endblock %}
+  <!-- Add additional CSS in static file -->
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+
+  <title>{% trans 'Medcare' %}</title>
+</head>
+
+<body>
+  <div id="fb-root"></div>
+  <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v13.0" nonce="WJ9XaU3a"></script>
+  <script type="text/javascript">
+    (function(d, m){
+        var kommunicateSettings = 
+            {"appId":"328842482034d873614f5c997ececca64","popupWidget":true,"automaticChatOpenOnNavigation":true};
+        var s = document.createElement("script"); s.type = "text/javascript"; s.async = true;
+        s.src = "https://widget.kommunicate.io/v2/kommunicate.app";
+        var h = document.getElementsByTagName("head")[0]; h.appendChild(s);
+        window.kommunicate = m; m._globals = kommunicateSettings;
+    })(document, window.kommunicate || {});
+  /* NOTE : Use web server to view HTML files as real-time update will not work if you directly open the HTML file in the browser. */
+  </script>
+  {% include 'navbar.html' %}
+  {% block content %}{% endblock %}
+  <!-- Statistic area -->
+  <section class="row static_area border-bottom" style=" background-color: cornsilk;">
+    <div class="container my-3 py-3" style="border-bottom: 20px;">
+      <div class="py-3 text-center">
+        <h4 style="color: black;">VIETNAM’S LARGEST HEALTHCARE PLATFORM</h4>
+      </div>
+      <br>
+      <div class="row" style="text-align: center;">
+        <div class="col-4">
+          <h2 style="color: coral;">160M+</h3>
+            <p>Visitors</p>
+        </div>
+
+        <div class="col-4">
+          <h2 style="color: coral;">27M+</h3>
+            <p>Orders Delivered</p>
+        </div>
+
+        <div class="col-4">
+          <h2 style="color: coral;">1800+</h3>
+            <p>Cities</p>
+        </div>
+      </div>
+    </div>
+  </section>
+  <div style="background-color: rgb(78, 74, 74);">
+    <footer class="container py-5" style="color:rgb(247, 244, 244);">
+      <div class="row">
+        <div class="col-12 col-md">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="d-block mb-2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="14.31" y1="8" x2="20.05" y2="17.94"></line>
+            <line x1="9.69" y1="8" x2="21.17" y2="8"></line>
+            <line x1="7.38" y1="12" x2="13.12" y2="2.06"></line>
+            <line x1="9.69" y1="16" x2="3.95" y2="6.06"></line>
+            <line x1="14.31" y1="16" x2="2.83" y2="16"></line>
+            <line x1="16.62" y1="12" x2="10.88" y2="21.94"></line>
+          </svg>
+          <small class="d-block mb-3 text-mute">© 2021-2022</small>
+        </div>
+        <div class="col-6 col-md">
+          <h5>Know Us</h5>
+          <ul class="list-unstyled text-small">
+            <li><a class="text-mute" href="#">About us</a></li>
+            <li><a class="text-mute" href="#">Contact us</a></li>
+            <li><a class="text-mute" href="#">Press Coverage</a></li>
+            <li><a class="text-mute" href="#">Careers</a></li>
+            <li><a class="text-mute" href="#">Bussiness</a></li>
+            <li><a class="text-mute" href="#">Partnership</a></li>
+          </ul>
+        </div>
+        <div class="col-6 col-md">
+          <h5>Our Policies</h5>
+          <ul class="list-unstyled text-small">
+            <li><a class="text-mute" href="#">Privacy Policy</a></li>
+            <li><a class="text-mute" href="#">Terms and Conditions</a></li>
+            <li><a class="text-mute" href="#">Editorial Policy</a></li>
+            <li><a class="text-mute" href="#">Return Policy</a></li>
+            <li><a class="text-mute" href="#">IP Policy</a></li>
+            <li><a class="text-mute" href="#">Grievance Redressal</a></li>
+          </ul>
+        </div>
+        <div class="col-6 col-md">
+          <h5>Our Services</h5>
+          <ul class="list-unstyled text-small">
+            <li><a class="text-mute" href="#">Order</a></li>
+            <li><a class="text-mute" href="#">Medicines</a></li>
+          </ul>
+        </div>
+        <div class="col-6 col-md">
+          <h5>Connect</h5>
+          <ul class="list-unstyled text-small">
+            <li><a class="text-mute" href="#">Facebook</a></li>
+            <li><a class="text-mute" href="#">Instagram</a></li>
+            <li><a class="text-mute" href="#">Youtube</a></li>
+            <li><a class="text-mute" href="#">Twitter</a></li>
+          </ul>
+        </div>
+      </div>
+    </footer>
+  </div>
+  <!--Bootstrap-->
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+  <!--Font Awesome-->
+  <script src="https://kit.fontawesome.com/7235818b31.js" crossorigin="anonymous"></script>
+</body>
+
+</html>

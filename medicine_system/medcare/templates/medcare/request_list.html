@@ -1,0 +1,286 @@
+{% extends "base_generic.html" %}
+{% load static %}
+{% load i18n %}
+{% block content %}
+<div class="container" style="margin-bottom: 100px;">
+    <div style="margin-top: 30px; margin-bottom: 30px;">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">All requests</li>
+            </ol>
+        </nav>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-4">
+            <h4 class="count" style="margin-left: 10px; padding-top: 8px;">{{ count }}{% if count > 1 %} Requests{% else %} Request{% endif %}</h4>
+        </div>
+        <div class="col-md-8" style="text-align: right;">
+            <div class="row">
+                <div class="col-md-10" style="padding-top: 8px;">
+                    <h4>Sort by : </h4>
+                </div>
+                <select id="filter-box" style="width:auto;">
+                    <option value="newest" selected>Newest</option>
+                    <option value="oldest">Oldest</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addModal">Add request</button>
+    <!-- Add Request Modal -->
+    <div class="modal fade text-left" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" style="max-width: 870px;" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title" id="exampleModalLabel">{% trans 'Add request' %}</h3>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    {{ request_form.text | safe }}
+                    {{ request_form.media }}
+                    {{ request_form.as_p }}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary close_modal" data-dismiss="modal">{% trans 'Cancel' %}</button>
+                    <a class="addRequest" href="">
+                        <button type="submit" name="report" class="btn btn-primary">{% trans 'Send' %}</button>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <table class="table table-hover" style="margin-top: 30px;">
+        <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Title</th>
+              <th scope="col">Created at</th>
+              <th scope="col">Status</th>
+              <th scope="col"></th>
+              <th scope="col"></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% if requests.exists %}
+            {% for request in requests %}
+            <tr>
+                <th scope="row">{{ forloop.counter }}</th>
+                <td>{{ request.title }}</td>
+                <td>{{ request.created_at }}</td>
+                <td>
+                    {% if request.status == 'Sent' %}
+                    <span class="badge badge-secondary">{% trans 'Sent' %}</span>
+                    {% elif request.status == 'Checked' %}
+                    <span class="badge badge-success">{% trans 'Checked' %}</span>
+                    {% elif request.status == 'Answered' %}
+                    <span class="badge badge-info">{% trans 'Answered' %}</span>
+                    {% endif %}
+                </td>
+                <td class="text-right">
+                    <a href="" data-toggle="modal" data-target="#requestModal_{{ request.id }}"><i class="far fa-eye" href=""></i></a>
+                    <!-- Request Modal -->
+                    <div class="modal fade text-left" id="requestModal_{{ request.id }}" tabindex="-1" role="dialog" aria-labelledby="requestModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h3 class="modal-title" id="exampleModalLabel">{% trans 'Request detail' %}</h3>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <h4>Title: {{ request.title }}</h4>
+                                    <h4>Content:</h4>
+                                    {% autoescape off %}
+                                    {{ request.content }}
+                                    {% endautoescape %}
+                                    <h4>Answer:</h4>
+                                    {% if request.answer %}
+                                    {% autoescape off %}
+                                    {{ request.answer }}
+                                    {% endautoescape %}
+                                    {% else %}
+                                    {% trans 'Do not have any answer from admin yet!' %}
+                                    {% endif %}
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary close_modal" data-dismiss="modal">{% trans 'Cancel' %}</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+                {% if request.status == "Sent" %}
+                <td><a href="" class="removeRequest" id="request_{{ request.id }}"><i class="fa fa-trash"></i></a></td>
+                {% else %}
+                <td></td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+            {% else %}
+            <tr>
+                <td>{% trans 'Do not have any request yet!' %}</td>
+            </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+
+<div id="cssLoader17" class="main-wrap main-wrap--white" style="z-index: 5; display: none;">
+    <div class="loader-background">
+        <div class="cssLoader17"></div>
+    </div>
+</div>
+
+<script>
+    $('#filter-box').change(function () {
+        var val = $(this).val();
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'request-list' %}",
+            data: {
+                type: val,
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+                action: 'filter'
+            },
+            success: function (data) {
+                document.getElementById("cssLoader17").style.display = "flex" 
+                setTimeout(function () {
+                    document.getElementById("cssLoader17").style.display = "none";
+                    $('tbody').html('');
+                    $('tbody').append(data.list)
+                }, 1000);
+            }.bind(this),
+            error: function(xhr, status, error) {
+                var err = JSON.parse(xhr.responseText);
+                alert(err.Message);
+            }
+        });
+});
+</script>
+<script>
+    $(function() {
+        $(document).on('click', '.addRequest', function (e) {
+        // preventing default actions
+        event.preventDefault();
+        var title = $("#id_title").val();
+        var content = CKEDITOR.instances['id_content'].getData();
+        // ajax call
+            $.ajax({
+                    type: "POST",
+                    // define url name
+                    url: "{% url 'request-action' %}", 
+                    data : {    
+                    action : 'addRequest',
+                    title : title,
+                    content : content,
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                },
+                // on success
+                success: function (data) {
+                    $('tbody').html('');
+                    $('tbody').append(data.list[0]);
+                    $("h4.count").html(data.list[1].count+ " Requests");
+                    $('.close_modal').click();
+                    toastr.options = {
+                        "debug": false,
+                        "newestOnTop": true,
+                        "progressBar": true,
+                        "positionClass": "toast-top-right",
+                        "preventDuplicates": false,
+                        "showDuration": "500",
+                        "hideDuration": "1000",
+                        "timeOut": "5000",
+                        "extendedTimeOut": "1000",
+                        "showEasing": "swing",
+                        "hideEasing": "linear",
+                        "showMethod": "fadeIn",
+                        "hideMethod": "fadeOut"
+                    }
+                    if (data.list[1].status == "success") {
+                        toastr["success"](data.list[1].message);
+                    }
+                    else if (data.list[1].status == "warning") {
+                        toastr["warning"](data.list[1].message);
+                    }
+                    else if (data.list[1].status == "error") {
+                        toastr["error"](data.list[1].message);
+                    }
+                },
+                // on error
+                error: function (data) {
+                    // alert the error if any error occured
+                    alert(data.status)
+                }
+            }); 
+        return false;
+    });   
+}); 
+</script>
+<script>
+    $(function() {
+        $(document).on('click', '.removeRequest', function (e) {
+        // preventing default actions
+        event.preventDefault();
+        var $id = $(this).attr('id');
+        var target = $id.substring($id.indexOf('_') + 1);
+        // ajax call
+            $.ajax({
+                    type: "POST",
+                    // define url name
+                    url: "{% url 'request-action' %}", 
+                    data : {    
+                    action : 'removeRequest',
+                    request_id : target,
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                },
+                // on success
+                success: function (data) {
+                    $('tbody').html('');
+                    $('tbody').append(data.list[0]);
+                    $("h4.count").html(data.list[1].count+ " Requests");
+                    toastr.options = {
+                        "debug": false,
+                        "newestOnTop": true,
+                        "progressBar": true,
+                        "positionClass": "toast-top-right",
+                        "preventDuplicates": false,
+                        "showDuration": "500",
+                        "hideDuration": "1000",
+                        "timeOut": "5000",
+                        "extendedTimeOut": "1000",
+                        "showEasing": "swing",
+                        "hideEasing": "linear",
+                        "showMethod": "fadeIn",
+                        "hideMethod": "fadeOut"
+                    }
+                    if (data.list[1].status == "success") {
+                        toastr["success"](data.list[1].message);
+                    }
+                    else if (data.list[1].status == "warning") {
+                        toastr["warning"](data.list[1].message);
+                    }
+                    else if (data.list[1].status == "error") {
+                        toastr["error"](data.list[1].message);
+                    };
+                },
+                // on error
+                error: function (data) {
+                    // alert the error if any error occured
+                    alert(data.status)
+                }
+            }); 
+        return false;
+    });   
+}); 
+</script>
+
+{% endblock %}
+
+{% block jscode %}
+<script src="{% static 'js/alert.js' %}" defer></script>
+{% endblock %}
